@@ -1,6 +1,5 @@
 package com.github.Indiv0.BookDupe;
 
-import java.util.logging.Logger;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -9,9 +8,6 @@ import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.ItemStack;
 
 public class ItemCraftListener implements Listener {
-	// Initialize the logger.
-	Logger log = Logger.getLogger("Minecraft");
-	
 	// Create a method to handle/interact with crafting events.
 	@EventHandler
 	public void onItemCraft(CraftItemEvent event) {
