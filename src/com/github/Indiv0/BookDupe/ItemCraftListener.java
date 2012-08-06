@@ -33,5 +33,4 @@ public class ItemCraftListener implements Listener {
             event.getWhoClicked().getInventory().addItem(newItem);
         }
     }
-    
 }

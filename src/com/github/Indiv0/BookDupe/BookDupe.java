@@ -11,7 +11,7 @@ public class BookDupe extends JavaPlugin {
     // Initializes an ItemCraftListener.
     public final ItemCraftListener blockListener = new ItemCraftListener();
 
-    public void onEnable(){
+    public void onEnable() {
         // Retrieves an instance of the PluginManager.
         PluginManager pm = getServer().getPluginManager();
 
