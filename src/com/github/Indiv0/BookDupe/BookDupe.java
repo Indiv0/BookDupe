@@ -3,6 +3,7 @@ package com.github.Indiv0.BookDupe;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapelessRecipe;
+import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -38,6 +39,7 @@ public class BookDupe extends JavaPlugin {
         getServer().addRecipe(recipe);
 
         // Prints a message to the server confirming successful initialization of the plugin.
-        getLogger().info("BookDupe has initialized successfully.");
+        PluginDescriptionFile pdfFile = this.getDescription();
+        getLogger().info(pdfFile.getName() + " " + pdfFile.getVersion() + " is enabled.");
     }
 }
