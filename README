@@ -33,4 +33,4 @@ Bugs:
   None known.
 
 ToDo:
-  Add chest creation/filling, remote management features.
+  Reimplement core functionality through NBT changes rather than the current ItemStack.clone()
