@@ -1,3 +1,14 @@
 name: BookDupe
 main: com.github.Indiv0.BookDupe.BookDupe
-version: 1.2
+version: 1.2.1
+permissions:
+  bookdupe.*:
+    description: Controls all BookDupe copy permissions/restrictions
+    children:
+      bookdupe.all: true
+  bookdupe.any:
+    description: Allows for the copying of any book from any author
+    default: true
+  bookdupe.use:
+    description: Controls whether or not the user can use BookDupe
+    default: true

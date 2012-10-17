@@ -12,6 +12,8 @@ import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
+import net.minecraft.server.*;
+
 public class ItemCraftListener implements Listener {
 
     // Create a method to handle/interact with crafting events.
@@ -26,11 +28,35 @@ public class ItemCraftListener implements Listener {
         // Makes sure the recipe contains a WRITTEN_BOOK.
         if(writtenBookIndex == -1) return;
         
+        if(!event.getWhoClicked().hasPermission("bookdupe.use")) {
+            event.setCancelled(true);
+            return;
+        }
+        
+        // ItemStack represention of the book to be cloned.
+        ItemStack initialBook = craftingInventory.getItem(writtenBookIndex);
+        
+        // The base Minecraft class representation of the book to be cloned.
+        net.minecraft.server.ItemStack stack = ((CraftItemStack) initialBook).getHandle();
+        
+        // Store all of the tags contained within the book.
+        NBTTagCompound tag = stack.getTag();
+        
+        // If the player does not have permission to copy any book
+        // and the book was not written by the player, do not allow
+        // the player to copy the book.
+        if(!event.getWhoClicked().hasPermission("bookdupe.any") &&
+                !(tag.getString("author") == event.getWhoClicked().getName()))
+        {
+            event.setCancelled(true);
+            return;
+        }
+        
         // Get the player's inventory.
         PlayerInventory playerInventory = event.getWhoClicked().getInventory();
 
         // Create a new ItemStack by cloning the previous one.
-        CraftItemStack craftResult = (CraftItemStack) craftingInventory.getItem(writtenBookIndex).clone();
+        CraftItemStack craftResult = (CraftItemStack) initialBook.clone();
         
         // Gets the index of the first INK_SACK in the recipe.
         int inkSackIndex = craftingInventory.first(Material.INK_SACK);
