@@ -24,7 +24,7 @@ public class ItemCraftListener implements Listener {
         int writtenBookIndex = craftingInventory.first(Material.WRITTEN_BOOK);
 
         // Makes sure the recipe contains a WRITTEN_BOOK.
-        if (writtenBookIndex == -1) return;
+        if(writtenBookIndex == -1) return;
         
         // Get the player's inventory.
         PlayerInventory playerInventory = event.getWhoClicked().getInventory();
@@ -40,7 +40,7 @@ public class ItemCraftListener implements Listener {
         int bookIndex = craftingInventory.first(Material.BOOK);
 
         // Makes sure the recipe doesn't contain an INK_SACK, FEATHER, and BOOK.
-        if (inkSackIndex == -1 || featherIndex == -1 || bookIndex == -1) {
+        if(inkSackIndex == -1 || featherIndex == -1 || bookIndex == -1) {
 
             HashMap<Integer, ? extends ItemStack> map = craftingInventory.all(Material.BOOK_AND_QUILL);
             int amount = map.size();
@@ -56,7 +56,7 @@ public class ItemCraftListener implements Listener {
         else
         {
             // If the player regularly clicked (singular craft).
-            if (!event.isShiftClick())
+            if(!event.isShiftClick())
                 // Adds the original book to the player's inventory.
                 playerInventory.addItem(craftResult.clone());
             // If the player didn't shift-click.
@@ -71,10 +71,10 @@ public class ItemCraftListener implements Listener {
                 int lowestAmount = 0;
                 
                 // Get the ingredient of which there is the least and loop until that ingredient no longer exists.
-                if (inkSackAmount < featherAmount && inkSackAmount < bookAmount)
+                if(inkSackAmount < featherAmount && inkSackAmount < bookAmount)
                     lowestAmount = inkSackAmount;
                 // Otherwise check if the crafting inventory contains less FEATHER than any other ingredient.
-                if (featherAmount < inkSackAmount && featherAmount < bookAmount)
+                if(featherAmount < inkSackAmount && featherAmount < bookAmount)
                     lowestAmount = featherAmount;
                 // Otherwise the crafting inventory contains less BOOK than any other ingredient.
                 else
@@ -85,21 +85,21 @@ public class ItemCraftListener implements Listener {
                 
                 itemsLeft = craftingInventory.getItem(inkSackIndex).getAmount() - lowestAmount;
                 
-                if (itemsLeft != 0)
+                if(itemsLeft != 0)
                     craftingInventory.getItem(inkSackIndex).setAmount(itemsLeft);
                 else
                     craftingInventory.clear(inkSackIndex);
                 
                 itemsLeft = craftingInventory.getItem(featherIndex).getAmount() - lowestAmount;
                 
-                if (itemsLeft != 0)
+                if(itemsLeft != 0)
                     craftingInventory.getItem(featherIndex).setAmount(itemsLeft);
                 else
                     craftingInventory.clear(featherIndex);
                 
                 itemsLeft = craftingInventory.getItem(bookIndex).getAmount() - lowestAmount;
                 
-                if (itemsLeft != 0)
+                if(itemsLeft != 0)
                     craftingInventory.getItem(bookIndex).setAmount(itemsLeft);
                 else
                     craftingInventory.clear(bookIndex);
@@ -108,10 +108,10 @@ public class ItemCraftListener implements Listener {
                 HashMap<Integer, ItemStack> leftOver = new HashMap<Integer, ItemStack>();
                 
                 // Adds the new books to the player's inventory.
-                for (int i = 0; i < lowestAmount; i++) {
+                for(int i = 0; i < lowestAmount; i++) {
                     leftOver.putAll((playerInventory.addItem(craftResult.clone())));
 
-                    if (!leftOver.isEmpty()) {
+                    if(!leftOver.isEmpty()) {
                         Location loc = event.getWhoClicked().getLocation();
                         ItemStack item = craftResult.clone();
                         event.getWhoClicked().getWorld().dropItem(loc, item);
