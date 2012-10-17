@@ -19,7 +19,8 @@ public class BookDupe extends JavaPlugin {
         // Registers the blockListener with the PluginManager.
         pm.registerEvents(this.blockListener, this);
 
-        // Creates a new recipe to serve as the basis for the book duplication feature.
+        // Creates a new recipe to serve as the basis for the book duplication
+        // feature.
         ItemStack craftable = new ItemStack(Material.BOOK_AND_QUILL);
         ShapelessRecipe recipe = new ShapelessRecipe(craftable);
         recipe.addIngredient(Material.WRITTEN_BOOK);
@@ -28,7 +29,8 @@ public class BookDupe extends JavaPlugin {
         // Adds the recipe to the server.
         getServer().addRecipe(recipe);
 
-        // Creates another recipe to serve as a secondary recipe for book duplication.
+        // Creates another recipe to serve as a secondary recipe for book
+        // duplication.
         recipe = new ShapelessRecipe(craftable);
         recipe.addIngredient(Material.WRITTEN_BOOK);
         recipe.addIngredient(Material.INK_SACK);
@@ -38,8 +40,11 @@ public class BookDupe extends JavaPlugin {
         // Adds the recipe to the server.
         getServer().addRecipe(recipe);
 
-        // Prints a message to the server confirming successful initialization of the plugin.
+        // Prints a message to the server confirming successful initialization
+        // of the plugin.
         PluginDescriptionFile pdfFile = this.getDescription();
-        getLogger().info(pdfFile.getName() + " " + pdfFile.getVersion() + " is enabled.");
+        getLogger()
+                .info(pdfFile.getName() + " " + pdfFile.getVersion()
+                        + " is enabled.");
     }
 }
