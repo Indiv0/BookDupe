@@ -1,11 +1,14 @@
 package com.github.Indiv0.BookDupe;
 
+import java.io.IOException;
+
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.mcstats.MetricsLite;
 
 public class BookDupe extends JavaPlugin {
 
@@ -40,11 +43,24 @@ public class BookDupe extends JavaPlugin {
         // Adds the recipe to the server.
         getServer().addRecipe(recipe);
 
+        // Enable PluginMetrics.
+        enableMetrics();
+        
         // Prints a message to the server confirming successful initialization
         // of the plugin.
         PluginDescriptionFile pdfFile = this.getDescription();
         getLogger()
                 .info(pdfFile.getName() + " " + pdfFile.getVersion()
                         + " is enabled.");
+    }
+    
+    private void enableMetrics()
+    {
+        try {
+            MetricsLite metrics = new MetricsLite(this);
+            metrics.start();
+        } catch (IOException ex) {
+            System.out.println("An error occured while appempting to connect to PluginMetrics.");
+        }
     }
 }
