@@ -1,6 +1,6 @@
 name: BookDupe
 main: com.github.Indiv0.BookDupe.BookDupe
-version: 1.2.1
+version: 1.2.3
 permissions:
   bookdupe.*:
     description: Controls all BookDupe copy permissions/restrictions

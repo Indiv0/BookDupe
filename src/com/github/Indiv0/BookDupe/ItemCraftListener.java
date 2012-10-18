@@ -47,7 +47,7 @@ public class ItemCraftListener implements Listener {
         // and the book was not written by the player, do not allow
         // the player to copy the book.
         if (!event.getWhoClicked().hasPermission("bookdupe.any")
-                && !(tag.getString("author") == event.getWhoClicked().getName())) {
+                && !tag.getString("author").equals(event.getWhoClicked().getName())) {
             event.setCancelled(true);
             return;
         }
