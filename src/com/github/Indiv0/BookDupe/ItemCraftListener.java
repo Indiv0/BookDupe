@@ -144,11 +144,12 @@ public class ItemCraftListener implements Listener {
                 for (int i = 0; i < lowestAmount; i++) {
                     leftOver.putAll((playerInventory.addItem(craftResult.clone())));
 
-                    if (!leftOver.isEmpty()) {
-                        Location loc = event.getWhoClicked().getLocation();
-                        ItemStack item = craftResult.clone();
-                        event.getWhoClicked().getWorld().dropItem(loc, item);
-                    }
+                    if (leftOver.isEmpty()) 
+                        continue;
+
+                    Location loc = event.getWhoClicked().getLocation();
+                    ItemStack item = craftResult.clone();
+                    event.getWhoClicked().getWorld().dropItem(loc, item);
                 }
             }
 
