@@ -2,6 +2,8 @@ package com.github.Indiv0.BookDupe;
 
 import java.util.HashMap;
 
+import net.minecraft.server.NBTTagCompound;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
@@ -12,13 +14,11 @@ import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
-import net.minecraft.server.*;
-
 public class ItemCraftListener implements Listener {
 
     // Create a method to handle/interact with crafting events.
     @EventHandler
-    public void onItemCraft(CraftItemEvent event) {
+    public void onItemCraft (CraftItemEvent event) {
         // Get the crafting inventory (3x3 matrix) used to craft the item.
         CraftingInventory craftingInventory = event.getInventory();
 
@@ -70,11 +70,11 @@ public class ItemCraftListener implements Listener {
             HashMap<Integer, ? extends ItemStack> map = craftingInventory
                     .all(Material.BOOK_AND_QUILL);
             int amount = map.size();
-            
+
             // Check only one BOOK_AND_QUILL is in the crafting matrix.
             if (amount != 2)
                 return;
-            
+
             // Adds the original book to the player's inventory.
             playerInventory.addItem(craftResult.clone());
 
@@ -144,7 +144,7 @@ public class ItemCraftListener implements Listener {
                 for (int i = 0; i < lowestAmount; i++) {
                     leftOver.putAll((playerInventory.addItem(craftResult.clone())));
 
-                    if (leftOver.isEmpty()) 
+                    if (leftOver.isEmpty())
                         continue;
 
                     Location loc = event.getWhoClicked().getLocation();

@@ -15,7 +15,8 @@ public class BookDupe extends JavaPlugin {
     // Initializes an ItemCraftListener.
     public final ItemCraftListener blockListener = new ItemCraftListener();
 
-    public void onEnable() {
+    @Override
+    public void onEnable () {
         // Retrieves an instance of the PluginManager.
         PluginManager pm = getServer().getPluginManager();
 
@@ -45,7 +46,7 @@ public class BookDupe extends JavaPlugin {
 
         // Enable PluginMetrics.
         enableMetrics();
-        
+
         // Prints a message to the server confirming successful initialization
         // of the plugin.
         PluginDescriptionFile pdfFile = this.getDescription();
@@ -53,8 +54,8 @@ public class BookDupe extends JavaPlugin {
                 .info(pdfFile.getName() + " " + pdfFile.getVersion()
                         + " is enabled.");
     }
-    
-    private void enableMetrics()
+
+    private void enableMetrics ()
     {
         try {
             MetricsLite metrics = new MetricsLite(this);
