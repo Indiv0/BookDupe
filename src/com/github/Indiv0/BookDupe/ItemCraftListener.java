@@ -18,7 +18,7 @@ public class ItemCraftListener implements Listener {
 
     // Create a method to handle/interact with crafting events.
     @EventHandler
-    public void onItemCraft (CraftItemEvent event) {
+    public void onItemCraft(CraftItemEvent event) {
         // Get the crafting inventory (3x3 matrix) used to craft the item.
         CraftingInventory craftingInventory = event.getInventory();
 
