@@ -1,0 +1,14 @@
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-#
+#  Configuration file for "BookDupe".   #
+#  @author Nikita Pekin (Indivisible0)  #
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-#
+
+#======== Safety Settings ==========#
+
+## Controls whether or not the duplication of illegally-enchanted books is allowed.
+# (Note: if this is set to false, any illegally enchanted books can not be copied at all, even text.)
+allowIllegalEnchants: false
+
+## Determines whether or not the text from illegally-enchanted books can be transferred.
+# (Note: if allowIllegalEnchants is set to false, this setting is considered to be false as well.)
+allowIllegalEnchantTransfer: false
