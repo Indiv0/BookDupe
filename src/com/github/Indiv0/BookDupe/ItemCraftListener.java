@@ -16,6 +16,12 @@ import org.bukkit.inventory.PlayerInventory;
 
 public class ItemCraftListener implements Listener {
 
+    public static BookDupe plugin;
+
+    public ItemCraftListener(BookDupe instance) {
+        plugin = instance;
+    }
+
     // Create a method to handle/interact with crafting events.
     @EventHandler
     public void onItemCraft(CraftItemEvent event) {
@@ -29,6 +35,8 @@ public class ItemCraftListener implements Listener {
         // Makes sure the recipe contains a WRITTEN_BOOK.
         if (writtenBookIndex == -1) return;
 
+        // If the player does not have permissions to copy books, cancels the
+        // event.
         if (!event.getWhoClicked().hasPermission("bookdupe.use")) {
             event.setCancelled(true);
             return;
@@ -52,11 +60,16 @@ public class ItemCraftListener implements Listener {
             return;
         }
 
+        // If the book has enchantments, check to see whether or not they're
+        // allowed.
+        if (!initialBook.getEnchantments().isEmpty())
+            if (plugin.getSetting("allowIllegalEnchants") == false) {
+                event.setCancelled(true);
+                return;
+            }
+
         // Get the player's inventory.
         PlayerInventory playerInventory = event.getWhoClicked().getInventory();
-
-        // Create a new ItemStack by cloning the previous one.
-        CraftItemStack craftResult = (CraftItemStack) initialBook.clone();
 
         // Gets the index of the first INK_SACK in the recipe.
         int inkSackIndex = craftingInventory.first(Material.INK_SACK);
@@ -76,19 +89,18 @@ public class ItemCraftListener implements Listener {
                 return;
 
             // Adds the original book to the player's inventory.
-            playerInventory.addItem(craftResult.clone());
+            playerInventory.addItem(initialBook);
 
             // Sets the result of the craft to the copied books.
-            event.setCurrentItem(craftResult);
+            event.setCurrentItem(getNewBook(initialBook));
         }
         // Handle a non BOOK_AND_QUILL based recipe.
         else {
             // If the player regularly clicked (singular craft).
-            if (!event.isShiftClick())
+            if (!event.isShiftClick()) {
                 // Adds the original book to the player's inventory.
-                playerInventory.addItem(craftResult.clone());
-            // If the player didn't shift-click.
-            else {
+                playerInventory.addItem(getNewBook(initialBook));
+            } else {
                 // Gets the amount of INK_SACK in the crafting matrix.
                 int inkSackAmount = craftingInventory.getItem(inkSackIndex).getAmount();
                 // Gets the amount of FEATHER in the crafting matrix.
@@ -100,16 +112,19 @@ public class ItemCraftListener implements Listener {
 
                 // Get the ingredient of which there is the least and loop until
                 // that ingredient no longer exists.
-                if (inkSackAmount < featherAmount && inkSackAmount < bookAmount)
+                if (inkSackAmount < featherAmount && inkSackAmount < bookAmount) {
                     lowestAmount = inkSackAmount;
+                }
                 // Otherwise check if the crafting inventory contains less
                 // FEATHER than any other ingredient.
-                if (featherAmount < inkSackAmount && featherAmount < bookAmount)
+                if (featherAmount < inkSackAmount && featherAmount < bookAmount) {
                     lowestAmount = featherAmount;
-                // Otherwise the crafting inventory contains less BOOK than any
-                // other ingredient.
-                else
+                    // Otherwise the crafting inventory contains less BOOK than
+                    // any
+                    // other ingredient.
+                } else {
                     lowestAmount = bookAmount;
+                }
 
                 // Loops through crafting matrix reducing item amounts
                 // one-by-one.
@@ -117,24 +132,27 @@ public class ItemCraftListener implements Listener {
 
                 itemsLeft = craftingInventory.getItem(inkSackIndex).getAmount() - lowestAmount;
 
-                if (itemsLeft != 0)
+                if (itemsLeft != 0) {
                     craftingInventory.getItem(inkSackIndex).setAmount(itemsLeft);
-                else
+                } else {
                     craftingInventory.clear(inkSackIndex);
+                }
 
                 itemsLeft = craftingInventory.getItem(featherIndex).getAmount() - lowestAmount;
 
-                if (itemsLeft != 0)
+                if (itemsLeft != 0) {
                     craftingInventory.getItem(featherIndex).setAmount(itemsLeft);
-                else
+                } else {
                     craftingInventory.clear(featherIndex);
+                }
 
                 itemsLeft = craftingInventory.getItem(bookIndex).getAmount() - lowestAmount;
 
-                if (itemsLeft != 0)
+                if (itemsLeft != 0) {
                     craftingInventory.getItem(bookIndex).setAmount(itemsLeft);
-                else
+                } else {
                     craftingInventory.clear(bookIndex);
+                }
 
                 // Creates a HashMap to store items which do not fit into the
                 // player's inventory.
@@ -142,19 +160,59 @@ public class ItemCraftListener implements Listener {
 
                 // Adds the new books to the player's inventory.
                 for (int i = 0; i < lowestAmount; i++) {
-                    leftOver.putAll((playerInventory.addItem(craftResult.clone())));
+                    leftOver.putAll((playerInventory.addItem(getNewBook(initialBook))));
 
-                    if (leftOver.isEmpty())
+                    if (leftOver.isEmpty()) {
                         continue;
+                    }
 
                     Location loc = event.getWhoClicked().getLocation();
-                    ItemStack item = craftResult.clone();
+                    ItemStack item = getNewBook(initialBook);
                     event.getWhoClicked().getWorld().dropItem(loc, item);
                 }
             }
 
             // Sets the result of the craft to the copied books.
-            event.setCurrentItem(craftResult);
+            event.setCurrentItem(initialBook);
         }
+    }
+
+    private ItemStack getNewBook(ItemStack previousBook) {
+        // Creates the new book to be returned.
+        CraftItemStack newBook = new CraftItemStack(Material.WRITTEN_BOOK);
+
+        // Creates copies of the source and target tags.
+        NBTTagCompound sourceTag = ((CraftItemStack) previousBook).getHandle().getTag();
+        NBTTagCompound targetTag = new NBTTagCompound();
+
+        // Clones all of the tags contained within the previous book to the new
+        // one.
+        transferBookTags(sourceTag, targetTag);
+
+        // If the transfer of enchantments is allowed, transfers them.
+        if (plugin.getSetting("allowIllegalEnchantTransfer") == true)
+            transferNBTTagList(sourceTag, targetTag, "ench");
+
+        // Sets the tags for the new book.
+        newBook.getHandle().tag = targetTag;
+
+        return newBook;
+    }
+
+    private void transferNBTTagList(NBTTagCompound sourceTag, NBTTagCompound targetTag, String list) {
+        // Checks to make sure that the enchantments exist.
+        if (sourceTag.getList(list).size() == 0)
+            return;
+
+        // Transfers any enchantments to the new tag.
+        targetTag.set(list, sourceTag.getList(list));
+    }
+
+    private void transferBookTags(NBTTagCompound sourceTag, NBTTagCompound targetTag)
+    {
+        // Transfers the author, title, and pages to the new tag.
+        targetTag.setString("author", sourceTag.getString("author"));
+        targetTag.setString("title", sourceTag.getString("title"));
+        transferNBTTagList(sourceTag, targetTag, "pages");
     }
 }
