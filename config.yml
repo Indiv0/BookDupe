@@ -9,6 +9,6 @@
 # (Note: if this is set to false, any illegally enchanted books can not be copied at all, even text.)
 allowIllegalEnchants: false
 
-## Determines whether or not the text from illegally-enchanted books can be transferred.
+## Determines whether or not the enchants from illegally-enchanted books can be transferred.
 # (Note: if allowIllegalEnchants is set to false, this setting is considered to be false as well.)
 allowIllegalEnchantTransfer: false
