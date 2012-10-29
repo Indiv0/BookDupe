@@ -1,3 +1,7 @@
+/**
+ *
+ * @author Indivisible0
+ */
 package com.github.Indiv0.BookDupe;
 
 import java.util.HashMap;
