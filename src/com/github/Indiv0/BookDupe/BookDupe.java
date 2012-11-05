@@ -17,7 +17,6 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapelessRecipe;
-import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -76,13 +75,6 @@ public class BookDupe extends JavaPlugin {
 
         // Adds the recipe to the server.
         getServer().addRecipe(recipe);
-
-        // Prints a message to the server confirming successful initialization
-        // of the plugin.
-        PluginDescriptionFile pdfFile = getDescription();
-        getLogger()
-                .info(pdfFile.getName() + " " + pdfFile.getVersion()
-                        + " is enabled.");
     }
 
     private void enableMetrics()
