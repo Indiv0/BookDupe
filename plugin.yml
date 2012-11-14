@@ -9,7 +9,8 @@ permissions:
   bookdupe.*:
     description: Controls all BookDupe copy permissions/restrictions
     children:
-      bookdupe.all: true
+      bookdupe.any: true
+      bookdupe.use: true
   bookdupe.any:
     description: Allows for the copying of any book from any author
     default: true
