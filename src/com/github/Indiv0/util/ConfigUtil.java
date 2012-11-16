@@ -25,6 +25,8 @@ public class ConfigUtil extends Util {
 
         // Gets the main folder for data to be stored in.
         mainDataFolder = plugin.getDataFolder();
+        // Gets the File representation of config.yml
+        configFile = new File(mainDataFolder, "config.yml");
 
         // Checks to make sure that the main folder for data stored in exists.
         // If not, creates it.
@@ -40,8 +42,6 @@ public class ConfigUtil extends Util {
     }
 
     private static void loadConfig(File configFile) {
-        configFile = new File(mainDataFolder, "config.yml");
-
         try {
             // Initializes the configuration and populates it with settings.
             settings = new YamlConfiguration();
