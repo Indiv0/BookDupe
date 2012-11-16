@@ -18,8 +18,10 @@ import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
-public class ItemCraftListener implements Listener {
+import com.github.Indiv0.util.ConfigUtil;
+import com.github.Indiv0.util.NBTTagUtil;
 
+public class ItemCraftListener implements Listener {
     public static BookDupe plugin;
 
     public ItemCraftListener(BookDupe instance) {
@@ -67,7 +69,7 @@ public class ItemCraftListener implements Listener {
         // If the book has enchantments, check to see whether or not they're
         // allowed.
         if (!initialBook.getEnchantments().isEmpty())
-            if (plugin.getSetting("allowIllegalEnchants") == false) {
+            if (ConfigUtil.getSetting("allowIllegalEnchants") == false) {
                 event.setCancelled(true);
                 return;
             }
@@ -194,8 +196,8 @@ public class ItemCraftListener implements Listener {
         transferBookTags(sourceTag, targetTag);
 
         // If the transfer of enchantments is allowed, transfers them.
-        if (plugin.getSetting("allowIllegalEnchantTransfer") == true)
-            transferNBTTagList(sourceTag, targetTag, "ench");
+        if (ConfigUtil.getSetting("allowIllegalEnchantTransfer") == true)
+            NBTTagUtil.transferNBTTagList(sourceTag, targetTag, "ench");
 
         // Sets the tags for the new book.
         newBook.getHandle().tag = targetTag;
@@ -203,20 +205,11 @@ public class ItemCraftListener implements Listener {
         return newBook;
     }
 
-    private void transferNBTTagList(NBTTagCompound sourceTag, NBTTagCompound targetTag, String list) {
-        // Checks to make sure that the enchantments exist.
-        if (sourceTag.getList(list).size() == 0)
-            return;
-
-        // Transfers any enchantments to the new tag.
-        targetTag.set(list, sourceTag.getList(list));
-    }
-
     private void transferBookTags(NBTTagCompound sourceTag, NBTTagCompound targetTag)
     {
         // Transfers the author, title, and pages to the new tag.
         targetTag.setString("author", sourceTag.getString("author"));
         targetTag.setString("title", sourceTag.getString("title"));
-        transferNBTTagList(sourceTag, targetTag, "pages");
+        NBTTagUtil.transferNBTTagList(sourceTag, targetTag, "pages");
     }
 }
