@@ -20,7 +20,7 @@ import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.github.Indiv0.BookDupe.util.Metrics;
+import com.github.Indiv0.util.Metrics;
 
 public class BookDupe extends JavaPlugin {
 
