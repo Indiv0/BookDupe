@@ -9,7 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.github.Indiv0.BukkitUtils.UtilManager;
+import com.github.indiv0.bukkitutils.UtilManager;
 
 public class BookDupe extends JavaPlugin {
     public final UtilManager utilManager = new UtilManager();
