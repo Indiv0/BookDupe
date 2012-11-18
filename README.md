@@ -1,36 +1,22 @@
-Description
-  BookDupe is a plugin for bukkit which is used for copying written books without significant effort.
+BookDupe [![Travis CI](https://secure.travis-ci.org/Indiv0/BookDupe.png)](http://travis-ci.org/#!/Indiv0/BookDupe)
+=============
 
-Permission
-  NONE
-Commands
-  NONE
+BookDupe is a plugin for bukkit which is used for copying written books without significant effort.
 
-Usage
-  Simply use one of the two new recipes in order to create a duplicate of a book:
-    Signed (written) book + Book & Quill = 2x Signed (written) book
-    Signed (written) book + book + feather + ink sack = 2x Signed (written) book    
+Download:
+--------------------
 
-Source
-  https://github.com/Indiv0/BookDupe
-Download
-  https://github.com/downloads/Indiv0/BookDupe/BookDupe.jar
+You can find the latest release [here](https://github.com/Indiv0/indiv0-mvn-repo/raw/master/snapshots/com/github/indiv0/bookdupe/1.4.0/bookdupe-1.4.0.jar).
 
-Changelog
-  1.2
-    Added secondary recipe to craft multiple books
-    Added shift-click support to secondary recipe
-  1.1
-    Fixed a bug resulting from clicking the result slot twice in a row
-  1.0
-    Books successfully duplicate when placed as a shapeless recipe
+For older and development versions, [see my maven repository](https://github.com/Indiv0/indiv0-mvn-repo/tree/master/snapshots/com/github/indiv0/bookdupe/).
 
-Verified compatibility
-  1.2
-    CB 1.3.2 RB-1.0
+Developers :
+--------------------
 
-Bugs
-  None known.
+### Installation :
 
-ToDo
-  Reimplement core functionality through NBT changes rather than the current ItemStack.clone()
+Simply drop the latest .jar into the /plugins directory of your server.
+
+### Documentation & Usage
+
+Further information can be found on the BookDupe BukkitDev page [here] (http://dev.bukkit.org/server-mods/bookdupe/).
