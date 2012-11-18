@@ -1,5 +1,5 @@
 name: BookDupe
-main: com.github.Indiv0.BookDupe.BookDupe
+main: com.github.indiv0.bookdupe.BookDupe
 version: 1.4
 author: Indiv0
 description: A plugin to allow the easy duplication of books.
