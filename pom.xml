@@ -1,13 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.github.Indiv0</groupId>
   <artifactId>bookdupe</artifactId>
   <version>1.4.0</version>
-  <name>BookDupe</name>
-  <url>http://dev.bukkit.org/server-mods/bookdupe/</url>
-  <description>A Bukkit plugin which allows users to duplicate books through a recipe.</description>
   <packaging>jar</packaging>
+  <name>BookDupe</name>
+  <description>A Bukkit plugin which allows users to duplicate books through a recipe.</description>
+  <url>http://dev.bukkit.org/server-mods/bookdupe/</url>
 
   <!-- Repositories -->
   <repositories>
@@ -49,6 +50,12 @@
 
   <build>
     <sourceDirectory>src</sourceDirectory>
+    <resources>
+        <resource>
+            <directory>src/main/resources/</directory>
+            <filtering>true</filtering>
+        </resource>
+    </resources>
 
     <!-- Plugins -->
     <plugins>
