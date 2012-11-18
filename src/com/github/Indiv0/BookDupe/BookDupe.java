@@ -9,25 +9,22 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.github.Indiv0.util.ConfigUtil;
-import com.github.Indiv0.util.ListenerUtil;
-import com.github.Indiv0.util.LogUtil;
-import com.github.Indiv0.util.MetricsUtil;
+import com.github.Indiv0.BukkitUtils.UtilManager;
 
 public class BookDupe extends JavaPlugin {
+    public final UtilManager utilManager = new UtilManager();
+    private final int CONFIG_VERSION = 1;
+
     @Override
     public void onLoad() {
         // Initialize all utilities.
-        LogUtil.initialize(this);
-        ConfigUtil.initialize(this);
-        MetricsUtil.initialize(this);
-        ListenerUtil.initialize(this);
+        utilManager.initialize(this, CONFIG_VERSION);
     }
 
     @Override
     public void onEnable() {
         // Registers the ItemCraftListener with the PluginManager.
-        ListenerUtil.registerListener(new ItemCraftListener(this));
+        utilManager.getListenerUtil().registerListener(new ItemCraftListener(this));
 
         // Create two recipes to serve as the basis of the plugin.
         ItemStack result = new ItemStack(Material.BOOK_AND_QUILL);
