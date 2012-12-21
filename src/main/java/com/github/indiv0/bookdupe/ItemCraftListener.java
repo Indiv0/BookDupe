@@ -6,11 +6,11 @@ package com.github.indiv0.bookdupe;
 
 import java.util.HashMap;
 
-import net.minecraft.server.NBTTagCompound;
+import net.minecraft.server.v1_4_6.NBTTagCompound;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_4_6.inventory.CraftItemStack;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.CraftItemEvent;
@@ -49,8 +49,7 @@ public class ItemCraftListener implements Listener {
         ItemStack initialBook = craftingInventory.getItem(writtenBookIndex);
 
         // The base Minecraft class representation of the book to be cloned.
-        net.minecraft.server.ItemStack stack = ((CraftItemStack) initialBook).getHandle();
-
+        net.minecraft.server.v1_4_6.ItemStack stack = CraftItemStack.asNMSCopy(initialBook);
         // Store all of the tags contained within the book.
         NBTTagCompound tag = stack.getTag();
 
@@ -182,10 +181,10 @@ public class ItemCraftListener implements Listener {
 
     private ItemStack getNewBook(ItemStack previousBook) {
         // Creates the new book to be returned.
-        CraftItemStack newBook = new CraftItemStack(Material.WRITTEN_BOOK);
+        net.minecraft.server.v1_4_6.ItemStack newBook = CraftItemStack.asNMSCopy(new ItemStack(Material.WRITTEN_BOOK));
 
         // Creates copies of the source and target tags.
-        NBTTagCompound sourceTag = ((CraftItemStack) previousBook).getHandle().getTag();
+        NBTTagCompound sourceTag = CraftItemStack.asNMSCopy(previousBook).getTag();
         NBTTagCompound targetTag = new NBTTagCompound();
 
         // Clones all of the tags contained within the previous book to the new
@@ -197,9 +196,9 @@ public class ItemCraftListener implements Listener {
             transferNBTTagList(sourceTag, targetTag, "ench");
 
         // Sets the tags for the new book.
-        newBook.getHandle().tag = targetTag;
+        newBook.setTag(targetTag);
 
-        return newBook;
+        return CraftItemStack.asBukkitCopy(newBook);
     }
 
     private void transferBookTags(NBTTagCompound sourceTag, NBTTagCompound targetTag)
