@@ -6,17 +6,15 @@ package com.github.indiv0.bookdupe;
 
 import java.util.HashMap;
 
-import net.minecraft.server.v1_4_6.NBTTagCompound;
-
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_4_6.inventory.CraftItemStack;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.BookMeta;
 
 public class ItemCraftListener implements Listener {
     public static BookDupe plugin;
@@ -36,7 +34,8 @@ public class ItemCraftListener implements Listener {
         int writtenBookIndex = craftingInventory.first(Material.WRITTEN_BOOK);
 
         // Makes sure the recipe contains a WRITTEN_BOOK.
-        if (writtenBookIndex == -1) return;
+        if (writtenBookIndex == -1)
+            return;
 
         // If the player does not have permissions to copy books, cancels the
         // event.
@@ -48,16 +47,14 @@ public class ItemCraftListener implements Listener {
         // ItemStack represention of the book to be cloned.
         ItemStack initialBook = craftingInventory.getItem(writtenBookIndex);
 
-        // The base Minecraft class representation of the book to be cloned.
-        net.minecraft.server.v1_4_6.ItemStack stack = CraftItemStack.asNMSCopy(initialBook);
-        // Store all of the tags contained within the book.
-        NBTTagCompound tag = stack.getTag();
+        // Gets the BookMeta data of the book.
+        BookMeta book = (BookMeta) initialBook.getItemMeta();
 
         // If the player does not have permission to copy any book
         // and the book was not written by the player, do not allow
         // the player to copy the book.
         if (!event.getWhoClicked().hasPermission("bookdupe.any")
-                && !tag.getString("author").equals(event.getWhoClicked().getName())) {
+                && !book.getAuthor().equals(event.getWhoClicked().getName())) {
             event.setCancelled(true);
             return;
         }
@@ -82,8 +79,7 @@ public class ItemCraftListener implements Listener {
 
         // Makes sure the recipe doesn't contain an INK_SACK, FEATHER, and BOOK.
         if (inkSackIndex == -1 || featherIndex == -1 || bookIndex == -1) {
-            HashMap<Integer, ? extends ItemStack> map = craftingInventory
-                    .all(Material.BOOK_AND_QUILL);
+            HashMap<Integer, ? extends ItemStack> map = craftingInventory.all(Material.BOOK_AND_QUILL);
             int amount = map.size();
 
             // Check only one BOOK_AND_QUILL is in the crafting matrix.
@@ -132,7 +128,8 @@ public class ItemCraftListener implements Listener {
                 // one-by-one.
                 int itemsLeft = 0;
 
-                itemsLeft = craftingInventory.getItem(inkSackIndex).getAmount() - lowestAmount;
+                itemsLeft = craftingInventory.getItem(inkSackIndex).getAmount()
+                        - lowestAmount;
 
                 if (itemsLeft != 0) {
                     craftingInventory.getItem(inkSackIndex).setAmount(itemsLeft);
@@ -140,7 +137,8 @@ public class ItemCraftListener implements Listener {
                     craftingInventory.clear(inkSackIndex);
                 }
 
-                itemsLeft = craftingInventory.getItem(featherIndex).getAmount() - lowestAmount;
+                itemsLeft = craftingInventory.getItem(featherIndex).getAmount()
+                        - lowestAmount;
 
                 if (itemsLeft != 0) {
                     craftingInventory.getItem(featherIndex).setAmount(itemsLeft);
@@ -148,7 +146,8 @@ public class ItemCraftListener implements Listener {
                     craftingInventory.clear(featherIndex);
                 }
 
-                itemsLeft = craftingInventory.getItem(bookIndex).getAmount() - lowestAmount;
+                itemsLeft = craftingInventory.getItem(bookIndex).getAmount()
+                        - lowestAmount;
 
                 if (itemsLeft != 0) {
                     craftingInventory.getItem(bookIndex).setAmount(itemsLeft);
@@ -181,40 +180,24 @@ public class ItemCraftListener implements Listener {
 
     private ItemStack getNewBook(ItemStack previousBook) {
         // Creates the new book to be returned.
-        net.minecraft.server.v1_4_6.ItemStack newBook = CraftItemStack.asNMSCopy(new ItemStack(Material.WRITTEN_BOOK));
+        ItemStack newBook = new ItemStack(Material.WRITTEN_BOOK);
 
-        // Creates copies of the source and target tags.
-        NBTTagCompound sourceTag = CraftItemStack.asNMSCopy(previousBook).getTag();
-        NBTTagCompound targetTag = new NBTTagCompound();
+        // Retrieves the BookMeta data.
+        BookMeta newBookMeta = (BookMeta) newBook.getItemMeta();
+        BookMeta previousBookMeta = (BookMeta) previousBook.getItemMeta();
 
-        // Clones all of the tags contained within the previous book to the new
-        // one.
-        transferBookTags(sourceTag, targetTag);
+        // Transfers the author, title, and pages to the new tag.
+        newBookMeta.setAuthor(previousBookMeta.getAuthor());
+        newBookMeta.setTitle(previousBookMeta.getTitle());
+        newBookMeta.setLore(previousBookMeta.getLore());
+        newBookMeta.setPages(previousBookMeta.getPages());
 
         // If the transfer of enchantments is allowed, transfers them.
         if (plugin.utilManager.getConfigUtil().<Boolean> getValue("allowIllegalEnchantTransfer", Boolean.class) == true)
-            transferNBTTagList(sourceTag, targetTag, "ench");
+            if (previousBookMeta.hasEnchants())
+                newBookMeta.getEnchants().putAll(previousBookMeta.getEnchants());
 
-        // Sets the tags for the new book.
-        newBook.setTag(targetTag);
-
-        return CraftItemStack.asBukkitCopy(newBook);
-    }
-
-    private void transferBookTags(NBTTagCompound sourceTag, NBTTagCompound targetTag)
-    {
-        // Transfers the author, title, and pages to the new tag.
-        targetTag.setString("author", sourceTag.getString("author"));
-        targetTag.setString("title", sourceTag.getString("title"));
-        transferNBTTagList(sourceTag, targetTag, "pages");
-    }
-
-    public static void transferNBTTagList(NBTTagCompound sourceTag, NBTTagCompound targetTag, String list) {
-        // Checks to make sure that the enchantments exist.
-        if (sourceTag.getList(list).size() == 0)
-            return;
-
-        // Transfers any enchantments to the new tag.
-        targetTag.set(list, sourceTag.getList(list));
+        newBook.setItemMeta(newBookMeta);
+        return newBook;
     }
 }
