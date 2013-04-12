@@ -2,7 +2,7 @@
  *
  * @author Indivisible0
  */
-package com.github.indiv0.bookdupe;
+package in.nikitapek.bookdupe;
 
 import java.util.HashMap;
 
