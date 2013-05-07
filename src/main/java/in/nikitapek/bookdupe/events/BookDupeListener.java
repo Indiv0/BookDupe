@@ -1,10 +1,8 @@
-/**
- *
- * @author Indivisible0
- */
-package in.nikitapek.bookdupe;
+package in.nikitapek.bookdupe.events;
 
 import java.util.HashMap;
+
+import in.nikitapek.bookdupe.util.BookDupeConfigurationContext;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -16,14 +14,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.BookMeta;
 
-public class ItemCraftListener implements Listener {
-    public static BookDupe plugin;
+public class BookDupeListener implements Listener {
+    private BookDupeConfigurationContext configurationContext;
 
-    public ItemCraftListener(BookDupe instance) {
-        plugin = instance;
+    public BookDupeListener(final BookDupeConfigurationContext configurationContext) {
+        this.configurationContext = configurationContext;
     }
 
-    // Create a method to handle/interact with crafting events.
     @EventHandler
     public void onItemCraft(CraftItemEvent event) {
         // Get the crafting inventory (3x3 matrix) used to craft the item.
@@ -62,7 +59,7 @@ public class ItemCraftListener implements Listener {
         // If the book has enchantments, check to see whether or not they're
         // allowed.
         if (!initialBook.getEnchantments().isEmpty())
-            if (plugin.utilManager.getConfigUtil().getValue("allowIllegalEnchants", Boolean.class) == false) {
+            if (configurationContext.allowIllegalEnchants == false) {
                 event.setCancelled(true);
                 return;
             }
@@ -193,7 +190,7 @@ public class ItemCraftListener implements Listener {
         newBookMeta.setPages(previousBookMeta.getPages());
 
         // If the transfer of enchantments is allowed, transfers them.
-        if (plugin.utilManager.getConfigUtil().<Boolean> getValue("allowIllegalEnchantTransfer", Boolean.class) == true)
+        if (configurationContext.allowIllegalEnchantTransfer == true)
             if (previousBookMeta.hasEnchants())
                 newBookMeta.getEnchants().putAll(previousBookMeta.getEnchants());
 

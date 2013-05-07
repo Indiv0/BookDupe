@@ -1,32 +1,21 @@
-/**
- *
- * @author Indivisible0
- */
 package in.nikitapek.bookdupe;
-
-import in.nikitapek.bukkitutils.UtilManager;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapelessRecipe;
-import org.bukkit.plugin.java.JavaPlugin;
 
-public class BookDupe extends JavaPlugin {
-    public final UtilManager utilManager = new UtilManager();
-    private final int CONFIG_VERSION = 1;
+import in.nikitapek.bookdupe.events.BookDupeListener;
+import in.nikitapek.bookdupe.util.BookDupeConfigurationContext;
 
-    @Override
-    public void onLoad() {
-        // Initialize all utilities.
-        utilManager.initialize(this, CONFIG_VERSION);
-    }
+import com.amshulman.mbapi.MbapiPlugin;
 
+public class BookDupe extends MbapiPlugin {
     @Override
     public void onEnable() {
-        // Registers the ItemCraftListener with the PluginManager.
-        utilManager.getListenerUtil().registerListener(new ItemCraftListener(this));
+        BookDupeConfigurationContext configurationContext = new BookDupeConfigurationContext(this);
 
-        // Create two recipes to serve as the basis of the plugin.
+        registerEventHandler(new BookDupeListener(configurationContext));
+
         ItemStack result = new ItemStack(Material.BOOK_AND_QUILL);
 
         addShapelessRecipe(result, new Material[] {

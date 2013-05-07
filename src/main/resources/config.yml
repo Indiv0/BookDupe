@@ -12,9 +12,3 @@ allowIllegalEnchants: false
 ## Determines whether or not the enchants from illegally-enchanted books can be transferred.
 # (Note: if allowIllegalEnchants is set to false, this setting is considered to be false as well.)
 allowIllegalEnchantTransfer: false
-
-###############################################
-##   Internal Settings (Read: DO NOT EDIT)   ##
-###############################################
-
-version: 1
