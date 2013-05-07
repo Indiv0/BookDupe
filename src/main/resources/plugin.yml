@@ -1,6 +1,7 @@
 name: BookDupe
 main: in.nikitapek.bookdupe.BookDupePlugin
-version: 1.7.0
+load: POSTWORLD
+version: ${project.version}
 author: Indiv0
 description: A plugin to allow the easy duplication of books.
 dev-url: http://github.com/Indiv0/BookDupe/
