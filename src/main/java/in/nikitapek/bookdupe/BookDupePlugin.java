@@ -9,7 +9,7 @@ import in.nikitapek.bookdupe.util.BookDupeConfigurationContext;
 
 import com.amshulman.mbapi.MbapiPlugin;
 
-public class BookDupe extends MbapiPlugin {
+public class BookDupePlugin extends MbapiPlugin {
     @Override
     public void onEnable() {
         BookDupeConfigurationContext configurationContext = new BookDupeConfigurationContext(this);
