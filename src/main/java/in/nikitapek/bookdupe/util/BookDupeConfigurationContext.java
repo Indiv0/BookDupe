@@ -3,12 +3,12 @@ package in.nikitapek.bookdupe.util;
 import com.amshulman.mbapi.MbapiPlugin;
 import com.amshulman.mbapi.util.ConfigurationContext;
 
-public class BookDupeConfigurationContext extends ConfigurationContext {
+public final class BookDupeConfigurationContext extends ConfigurationContext {
     // Stores whether or not pumpkins are currently spreading.
     public final boolean allowIllegalEnchants;
     public final boolean allowIllegalEnchantTransfer;
 
-    public BookDupeConfigurationContext(MbapiPlugin plugin) {
+    public BookDupeConfigurationContext(final MbapiPlugin plugin) {
         super(plugin);
 
         plugin.saveDefaultConfig();

@@ -1,8 +1,8 @@
 package in.nikitapek.bookdupe.events;
 
-import java.util.HashMap;
-
 import in.nikitapek.bookdupe.util.BookDupeConfigurationContext;
+
+import java.util.HashMap;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -14,25 +14,26 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.BookMeta;
 
-public class BookDupeListener implements Listener {
-    private BookDupeConfigurationContext configurationContext;
+public final class BookDupeListener implements Listener {
+    private final BookDupeConfigurationContext configurationContext;
 
     public BookDupeListener(final BookDupeConfigurationContext configurationContext) {
         this.configurationContext = configurationContext;
     }
 
     @EventHandler
-    public void onItemCraft(CraftItemEvent event) {
+    public void onItemCraft(final CraftItemEvent event) {
         // Get the crafting inventory (3x3 matrix) used to craft the item.
-        CraftingInventory craftingInventory = event.getInventory();
+        final CraftingInventory craftingInventory = event.getInventory();
 
         // Get the index of the first (and only) Material.WRITTEN_BOOK used in
         // the recipe.
-        int writtenBookIndex = craftingInventory.first(Material.WRITTEN_BOOK);
+        final int writtenBookIndex = craftingInventory.first(Material.WRITTEN_BOOK);
 
         // Makes sure the recipe contains a WRITTEN_BOOK.
-        if (writtenBookIndex == -1)
+        if (writtenBookIndex == -1) {
             return;
+        }
 
         // If the player does not have permissions to copy books, cancels the
         // event.
@@ -42,10 +43,10 @@ public class BookDupeListener implements Listener {
         }
 
         // ItemStack represention of the book to be cloned.
-        ItemStack initialBook = craftingInventory.getItem(writtenBookIndex);
+        final ItemStack initialBook = craftingInventory.getItem(writtenBookIndex);
 
         // Gets the BookMeta data of the book.
-        BookMeta book = (BookMeta) initialBook.getItemMeta();
+        final BookMeta book = (BookMeta) initialBook.getItemMeta();
 
         // If the player does not have permission to copy any book
         // and the book was not written by the player, do not allow
@@ -58,30 +59,30 @@ public class BookDupeListener implements Listener {
 
         // If the book has enchantments, check to see whether or not they're
         // allowed.
-        if (!initialBook.getEnchantments().isEmpty())
-            if (configurationContext.allowIllegalEnchants == false) {
-                event.setCancelled(true);
-                return;
-            }
+        if (!initialBook.getEnchantments().isEmpty() && !configurationContext.allowIllegalEnchants) {
+            event.setCancelled(true);
+            return;
+        }
 
         // Get the player's inventory.
-        PlayerInventory playerInventory = event.getWhoClicked().getInventory();
+        final PlayerInventory playerInventory = event.getWhoClicked().getInventory();
 
         // Gets the index of the first INK_SACK in the recipe.
-        int inkSackIndex = craftingInventory.first(Material.INK_SACK);
+        final int inkSackIndex = craftingInventory.first(Material.INK_SACK);
         // Gets the index of the first FEATHER in the recipe.
-        int featherIndex = craftingInventory.first(Material.FEATHER);
+        final int featherIndex = craftingInventory.first(Material.FEATHER);
         // Gets the index of the first BOOK in the recipe.
-        int bookIndex = craftingInventory.first(Material.BOOK);
+        final int bookIndex = craftingInventory.first(Material.BOOK);
 
         // Makes sure the recipe doesn't contain an INK_SACK, FEATHER, and BOOK.
         if (inkSackIndex == -1 || featherIndex == -1 || bookIndex == -1) {
-            HashMap<Integer, ? extends ItemStack> map = craftingInventory.all(Material.BOOK_AND_QUILL);
-            int amount = map.size();
+            final HashMap<Integer, ? extends ItemStack> map = craftingInventory.all(Material.BOOK_AND_QUILL);
+            final int amount = map.size();
 
             // Check only one BOOK_AND_QUILL is in the crafting matrix.
-            if (amount != 2)
+            if (amount != 2) {
                 return;
+            }
 
             // Adds the original book to the player's inventory.
             playerInventory.addItem(initialBook);
@@ -97,11 +98,11 @@ public class BookDupeListener implements Listener {
                 playerInventory.addItem(getNewBook(initialBook));
             } else {
                 // Gets the amount of INK_SACK in the crafting matrix.
-                int inkSackAmount = craftingInventory.getItem(inkSackIndex).getAmount();
+                final int inkSackAmount = craftingInventory.getItem(inkSackIndex).getAmount();
                 // Gets the amount of FEATHER in the crafting matrix.
-                int featherAmount = craftingInventory.getItem(featherIndex).getAmount();
+                final int featherAmount = craftingInventory.getItem(featherIndex).getAmount();
                 // Gets the amount of BOOK in the crafting matrix.
-                int bookAmount = craftingInventory.getItem(bookIndex).getAmount();
+                final int bookAmount = craftingInventory.getItem(bookIndex).getAmount();
 
                 int lowestAmount = 0;
 
@@ -154,7 +155,7 @@ public class BookDupeListener implements Listener {
 
                 // Creates a HashMap to store items which do not fit into the
                 // player's inventory.
-                HashMap<Integer, ItemStack> leftOver = new HashMap<Integer, ItemStack>();
+                final HashMap<Integer, ItemStack> leftOver = new HashMap<Integer, ItemStack>();
 
                 // Adds the new books to the player's inventory.
                 for (int i = 0; i < lowestAmount; i++) {
@@ -164,8 +165,8 @@ public class BookDupeListener implements Listener {
                         continue;
                     }
 
-                    Location loc = event.getWhoClicked().getLocation();
-                    ItemStack item = getNewBook(initialBook);
+                    final Location loc = event.getWhoClicked().getLocation();
+                    final ItemStack item = getNewBook(initialBook);
                     event.getWhoClicked().getWorld().dropItem(loc, item);
                 }
             }
@@ -175,13 +176,13 @@ public class BookDupeListener implements Listener {
         }
     }
 
-    private ItemStack getNewBook(ItemStack previousBook) {
+    private ItemStack getNewBook(final ItemStack previousBook) {
         // Creates the new book to be returned.
-        ItemStack newBook = new ItemStack(Material.WRITTEN_BOOK);
+        final ItemStack newBook = new ItemStack(Material.WRITTEN_BOOK);
 
         // Retrieves the BookMeta data.
-        BookMeta newBookMeta = (BookMeta) newBook.getItemMeta();
-        BookMeta previousBookMeta = (BookMeta) previousBook.getItemMeta();
+        final BookMeta newBookMeta = (BookMeta) newBook.getItemMeta();
+        final BookMeta previousBookMeta = (BookMeta) previousBook.getItemMeta();
 
         // Transfers the author, title, and pages to the new tag.
         newBookMeta.setAuthor(previousBookMeta.getAuthor());
@@ -190,9 +191,9 @@ public class BookDupeListener implements Listener {
         newBookMeta.setPages(previousBookMeta.getPages());
 
         // If the transfer of enchantments is allowed, transfers them.
-        if (configurationContext.allowIllegalEnchantTransfer == true)
-            if (previousBookMeta.hasEnchants())
-                newBookMeta.getEnchants().putAll(previousBookMeta.getEnchants());
+        if (configurationContext.allowIllegalEnchantTransfer && previousBookMeta.hasEnchants()) {
+            newBookMeta.getEnchants().putAll(previousBookMeta.getEnchants());
+        }
 
         newBook.setItemMeta(newBookMeta);
         return newBook;
