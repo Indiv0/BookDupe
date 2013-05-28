@@ -74,13 +74,11 @@ public final class BookDupeListener implements Listener {
         // Gets the index of the first BOOK in the recipe.
         final int bookIndex = craftingInventory.first(Material.BOOK);
 
-        // Makes sure the recipe doesn't contain an INK_SACK, FEATHER, and BOOK.
-        if (inkSackIndex == -1 || featherIndex == -1 || bookIndex == -1) {
-            final HashMap<Integer, ? extends ItemStack> map = craftingInventory.all(Material.BOOK_AND_QUILL);
-            final int amount = map.size();
-
+        if (inkSackIndex != -1 && featherIndex != -1 && bookIndex == -1) {
+            event.setCurrentItem(getNewBook(initialBook, Material.BOOK_AND_QUILL));
+        } else if (inkSackIndex == -1 || featherIndex == -1 || bookIndex == -1) {
             // Check only one BOOK_AND_QUILL is in the crafting matrix.
-            if (amount != 2) {
+            if (craftingInventory.all(Material.BOOK_AND_QUILL).size() != 2) {
                 return;
             }
 
@@ -88,14 +86,13 @@ public final class BookDupeListener implements Listener {
             playerInventory.addItem(initialBook);
 
             // Sets the result of the craft to the copied books.
-            event.setCurrentItem(getNewBook(initialBook));
-        }
-        // Handle a non BOOK_AND_QUILL based recipe.
-        else {
+            event.setCurrentItem(getNewBook(initialBook, Material.WRITTEN_BOOK));
+        } else {
+            // Handle a non BOOK_AND_QUILL based recipe.
             // If the player regularly clicked (singular craft).
             if (!event.isShiftClick()) {
                 // Adds the original book to the player's inventory.
-                playerInventory.addItem(getNewBook(initialBook));
+                playerInventory.addItem(getNewBook(initialBook, Material.WRITTEN_BOOK));
             } else {
                 // Gets the amount of INK_SACK in the crafting matrix.
                 final int inkSackAmount = craftingInventory.getItem(inkSackIndex).getAmount();
@@ -159,14 +156,14 @@ public final class BookDupeListener implements Listener {
 
                 // Adds the new books to the player's inventory.
                 for (int i = 0; i < lowestAmount; i++) {
-                    leftOver.putAll((playerInventory.addItem(getNewBook(initialBook))));
+                    leftOver.putAll((playerInventory.addItem(getNewBook(initialBook, Material.WRITTEN_BOOK))));
 
                     if (leftOver.isEmpty()) {
                         continue;
                     }
 
                     final Location loc = event.getWhoClicked().getLocation();
-                    final ItemStack item = getNewBook(initialBook);
+                    final ItemStack item = getNewBook(initialBook, Material.WRITTEN_BOOK);
                     event.getWhoClicked().getWorld().dropItem(loc, item);
                 }
             }
@@ -176,9 +173,12 @@ public final class BookDupeListener implements Listener {
         }
     }
 
-    private ItemStack getNewBook(final ItemStack previousBook) {
+    private ItemStack getNewBook(final ItemStack previousBook, final Material bookType) {
+        if (bookType == null || (bookType != Material.WRITTEN_BOOK && bookType != Material.BOOK_AND_QUILL)) {
+            throw new IllegalArgumentException();
+        }
         // Creates the new book to be returned.
-        final ItemStack newBook = new ItemStack(Material.WRITTEN_BOOK);
+        final ItemStack newBook = new ItemStack(bookType);
 
         // Retrieves the BookMeta data.
         final BookMeta newBookMeta = (BookMeta) newBook.getItemMeta();

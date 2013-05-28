@@ -14,18 +14,23 @@ public final class BookDupePlugin extends MbapiPlugin {
     public void onEnable() {
         registerEventHandler(new BookDupeListener(new BookDupeConfigurationContext(this)));
 
-        final ItemStack result = new ItemStack(Material.BOOK_AND_QUILL);
-
-        addShapelessRecipe(result, new Material[] {
+        addShapelessRecipe(new ItemStack(Material.BOOK_AND_QUILL), new Material[] {
                 Material.WRITTEN_BOOK,
                 Material.BOOK_AND_QUILL
         });
-        addShapelessRecipe(result, new Material[] {
+        addShapelessRecipe(new ItemStack(Material.BOOK_AND_QUILL), new Material[] {
                 Material.WRITTEN_BOOK,
                 Material.INK_SACK,
                 Material.FEATHER,
                 Material.BOOK
         });
+        addShapelessRecipe(new ItemStack(Material.BOOK_AND_QUILL), new Material[] {
+                Material.WRITTEN_BOOK,
+                Material.INK_SACK,
+                Material.FEATHER
+        });
+
+        super.onEnable();
     }
 
     private void addShapelessRecipe(final ItemStack result, final Material[] materials) {
