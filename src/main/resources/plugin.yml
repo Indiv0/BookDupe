@@ -7,11 +7,6 @@ description: A plugin to allow the easy duplication of books.
 dev-url: http://github.com/Indiv0/BookDupe/
 
 permissions:
-  bookdupe.*:
-    description: Controls all BookDupe copy permissions/restrictions
-    children:
-      bookdupe.any: true
-      bookdupe.use: true
   bookdupe.any:
     description: Allows for the copying of any book from any author
     default: false
