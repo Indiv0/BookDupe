@@ -14,7 +14,7 @@ permissions:
       bookdupe.use: true
   bookdupe.any:
     description: Allows for the copying of any book from any author
-    default: true
+    default: false
   bookdupe.use:
     description: Controls whether or not the user can use BookDupe
-    default: true
+    default: false
