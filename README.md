@@ -1,4 +1,4 @@
-BookDupe [![Travis CI](https://secure.travis-ci.org/Indiv0/BookDupe.png)](http://travis-ci.org/#!/Indiv0/BookDupe)
+BookDupe [![Travis CI](https://secure.travis-ci.org/Indiv0/book-dupe.png)](http://travis-ci.org/#!/Indiv0/book-dupe)
 ===
 
 BookDupe is a plugin for bukkit which is used for copying written books without significant effort.
