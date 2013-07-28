@@ -1,15 +1,15 @@
 package in.nikitapek.bookdupe.events;
 
-import com.amshulman.mbapi.MbapiPlugin;
-import in.nikitapek.bookdupe.BookDupePlugin;
-import in.nikitapek.bookdupe.util.BookDupeConfigurationContext;
-
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.CraftItemEvent;
@@ -19,13 +19,7 @@ import org.bukkit.inventory.meta.BookMeta;
 public final class BookDupeListener implements Listener {
     private final Map<String, Recipe> recipes = new HashMap<>();
 
-    private final boolean allowIllegalEnchants;
-    private final boolean allowIllegalEnchantTransfer;
-
-    public BookDupeListener(final BookDupeConfigurationContext configurationContext) {
-        this.allowIllegalEnchants = configurationContext.allowIllegalEnchants;
-        this.allowIllegalEnchantTransfer = configurationContext.allowIllegalEnchantTransfer;
-
+    public BookDupeListener() {
         addShapelessRecipe("duplicate", new ItemStack(Material.BOOK_AND_QUILL), new Material[] {
                 Material.WRITTEN_BOOK,
                 Material.BOOK_AND_QUILL
@@ -47,152 +41,119 @@ public final class BookDupeListener implements Listener {
     public void onItemCraft(final CraftItemEvent event) {
         final CraftingInventory craftingInventory = event.getInventory();
         final Recipe recipe = event.getRecipe();
+        final Player player = (Player) event.getWhoClicked();
+        final PlayerInventory playerInventory = player.getInventory();
+        final String recipeName = getRecipeName(recipe);
+        final String playerName = player.getName();
 
-        // All BookDupe recipes are hapeless, so a non-shapeless recipe is irrelevant.
-        // The recipe is also irrelevant if it is not stored in the recipes Map.
-        if (!(recipe instanceof ShapelessRecipe) || !recipes.containsValue(recipe)) {
+        // If the recipe did not match any BookDupe recipe, it is irrelevant.
+        if (recipeName == null) {
             return;
         }
 
-        // If the player does not have permissions to copy books, cancels the
-        // event.
-        if (!event.getWhoClicked().hasPermission("bookdupe.use")) {
+        // If the player does not have the proper permissions to use BookDupe recipes, the event is cancelled.
+        if (!player.hasPermission("bookdupe.copy") && !player.hasPermission("bookdupe.unsign") ) {
             event.setCancelled(true);
             return;
         }
 
-        // ItemStack represention of the book to be cloned.
+        // Get the ItemStack and the BookMeta of the book in the recipe.
         final ItemStack initialBook = craftingInventory.getItem(craftingInventory.first(Material.WRITTEN_BOOK));
-
-        // Gets the BookMeta data of the book.
         final BookMeta book = (BookMeta) initialBook.getItemMeta();
+        final String author = book.getAuthor();
 
-        // If the player does not have permission to copy any book
-        // and the book was not written by the player, do not allow
-        // the player to copy the book.
-        if (!event.getWhoClicked().hasPermission("bookdupe.any")
-                && !book.getAuthor().equals(event.getWhoClicked().getName())) {
+        // If the player does not have permission to copy/unsign books belonging to them and the book was written by the player, then the player is not allowed to copy/unsign the book.
+        if (author.equals(playerName) && !player.hasPermission("bookdupe.copy.self") && !player.hasPermission("bookdupe.unsign.self")) {
             event.setCancelled(true);
             return;
         }
 
-        // If the book has enchantments, check to see whether or not they're
-        // allowed.
-        if (!initialBook.getEnchantments().isEmpty() && !allowIllegalEnchants) {
+        // If the player does not have permission to copy/unsign books not belonging to them and the book was not written by the player, then the player is not allowed to copy/unsign the book.
+        if (!author.equals(playerName) && !player.hasPermission("bookdupe.copy.others") && !player.hasPermission("bookdupe.unsign.others")) {
             event.setCancelled(true);
             return;
         }
 
-        // Get the player's inventory.
-        final PlayerInventory playerInventory = event.getWhoClicked().getInventory();
+        // If the book has enchantments, check to see whether or not the player is allowed to interact with enchanted books.
+        if (!player.hasPermission("bookdupe.enchanted") &&  !initialBook.getEnchantments().isEmpty()) {
+            event.setCancelled(true);
+            return;
+        }
 
-        // Gets the index of the first INK_SACK in the recipe.
-        final int inkSackIndex = craftingInventory.first(Material.INK_SACK);
-        // Gets the index of the first FEATHER in the recipe.
-        final int featherIndex = craftingInventory.first(Material.FEATHER);
-        // Gets the index of the first BOOK in the recipe.
-        final int bookIndex = craftingInventory.first(Material.BOOK);
+        switch (recipeName) {
+            case "unsign":
+                event.setCurrentItem(getNewBook(initialBook, Material.BOOK_AND_QUILL, player));
+                break;
+            case "duplicate":
+                // Ensure that only two (the ingredient and the result) BOOK_AND_QUILL are in the crafting matrix.
+                if (craftingInventory.all(Material.BOOK_AND_QUILL).size() != 2) {
+                    return;
+                }
 
-        if (recipe.equals(recipes.get("unsign"))) {
-            event.setCurrentItem(getNewBook(initialBook, Material.BOOK_AND_QUILL));
-        } else if (recipe.equals(recipes.get("duplicate"))) {
-            // Check only one BOOK_AND_QUILL is in the crafting matrix.
-            if (craftingInventory.all(Material.BOOK_AND_QUILL).size() != 2) {
-                return;
-            }
-
-            // Adds the original book to the player's inventory.
-            playerInventory.addItem(initialBook);
-
-            // Sets the result of the craft to the copied books.
-            event.setCurrentItem(getNewBook(initialBook, Material.WRITTEN_BOOK));
-        } else if (recipe.equals(recipe.equals(recipes.get("create")))) {
-            // Handle a non BOOK_AND_QUILL based recipe.
-            // If the player regularly clicked (singular craft).
-            if (!event.isShiftClick()) {
                 // Adds the original book to the player's inventory.
-                playerInventory.addItem(getNewBook(initialBook, Material.WRITTEN_BOOK));
-            } else {
-                // Gets the amount of INK_SACK in the crafting matrix.
-                final int inkSackAmount = craftingInventory.getItem(inkSackIndex).getAmount();
-                // Gets the amount of FEATHER in the crafting matrix.
-                final int featherAmount = craftingInventory.getItem(featherIndex).getAmount();
-                // Gets the amount of BOOK in the crafting matrix.
-                final int bookAmount = craftingInventory.getItem(bookIndex).getAmount();
+                playerInventory.addItem(initialBook);
 
-                int lowestAmount = 0;
-
-                // Get the ingredient of which there is the least and loop until
-                // that ingredient no longer exists.
-                if (inkSackAmount < featherAmount && inkSackAmount < bookAmount) {
-                    lowestAmount = inkSackAmount;
-                }
-                // Otherwise check if the crafting inventory contains less
-                // FEATHER than any other ingredient.
-                if (featherAmount < inkSackAmount && featherAmount < bookAmount) {
-                    lowestAmount = featherAmount;
-                    // Otherwise the crafting inventory contains less BOOK than
-                    // any
-                    // other ingredient.
+                // Sets the result of the craft to the copied book.
+                event.setCurrentItem(getNewBook(initialBook, Material.WRITTEN_BOOK, player));
+                break;
+            case "create":
+                // If the player regularly clicked (singular craft).
+                if (!event.isShiftClick()) {
+                    // Adds the original book to the player's inventory.
+                    playerInventory.addItem(getNewBook(initialBook, Material.WRITTEN_BOOK, player));
                 } else {
-                    lowestAmount = bookAmount;
-                }
+                    final Map<Integer, Integer> itemsLeft = new HashMap<>();
 
-                // Loops through crafting matrix reducing item amounts
-                // one-by-one.
-                int itemsLeft = 0;
+                    // Gets the indexes of each ingredient in the recipe.
+                    final int inkSackIndex = craftingInventory.first(Material.INK_SACK);
+                    final int featherIndex = craftingInventory.first(Material.FEATHER);
+                    final int bookIndex = craftingInventory.first(Material.BOOK);
 
-                itemsLeft = craftingInventory.getItem(inkSackIndex).getAmount()
-                        - lowestAmount;
+                    // Stores the amount of each ingredient in the crafting matrix.
+                    itemsLeft.put(inkSackIndex, craftingInventory.getItem(inkSackIndex).getAmount());
+                    itemsLeft.put(featherIndex, craftingInventory.getItem(featherIndex).getAmount());
+                    itemsLeft.put(bookIndex, craftingInventory.getItem(bookIndex).getAmount());
 
-                if (itemsLeft != 0) {
-                    craftingInventory.getItem(inkSackIndex).setAmount(itemsLeft);
-                } else {
-                    craftingInventory.clear(inkSackIndex);
-                }
+                    // Get amount of the ingredient of which there is the least to determine how long to loop over the ingredients.
+                    final int lowestAmount = Collections.min(itemsLeft.values());
 
-                itemsLeft = craftingInventory.getItem(featherIndex).getAmount()
-                        - lowestAmount;
+                    // Store the amount of each ingredient that will remain after the crafting process.
+                    for (Map.Entry<Integer, Integer> ingredient : itemsLeft.entrySet()) {
+                        final int remainingAmount = ingredient.getValue() - lowestAmount;
+                        //ingredient.setValue(remainingAmount);
 
-                if (itemsLeft != 0) {
-                    craftingInventory.getItem(featherIndex).setAmount(itemsLeft);
-                } else {
-                    craftingInventory.clear(featherIndex);
-                }
+                        if (remainingAmount == 0) {
+                            craftingInventory.clear(ingredient.getKey());
+                            continue;
+                        }
 
-                itemsLeft = craftingInventory.getItem(bookIndex).getAmount()
-                        - lowestAmount;
-
-                if (itemsLeft != 0) {
-                    craftingInventory.getItem(bookIndex).setAmount(itemsLeft);
-                } else {
-                    craftingInventory.clear(bookIndex);
-                }
-
-                // Creates a HashMap to store items which do not fit into the
-                // player's inventory.
-                final HashMap<Integer, ItemStack> leftOver = new HashMap<Integer, ItemStack>();
-
-                // Adds the new books to the player's inventory.
-                for (int i = 0; i < lowestAmount; i++) {
-                    leftOver.putAll((playerInventory.addItem(getNewBook(initialBook, Material.WRITTEN_BOOK))));
-
-                    if (leftOver.isEmpty()) {
-                        continue;
+                        craftingInventory.getItem(ingredient.getKey()).setAmount(remainingAmount);
                     }
 
-                    final Location loc = event.getWhoClicked().getLocation();
-                    final ItemStack item = getNewBook(initialBook, Material.WRITTEN_BOOK);
-                    event.getWhoClicked().getWorld().dropItem(loc, item);
-                }
-            }
+                    // Creates a HashMap to store items which do not fit into the player's inventory.
+                    final Map<Integer, ItemStack> leftOver = new HashMap<>();
 
-            // Sets the result of the craft to the copied books.
-            event.setCurrentItem(initialBook);
-        }
+                    // Adds the new books to the player's inventory.
+                    for (int i = 0; i < lowestAmount; i++) {
+                        leftOver.putAll((playerInventory.addItem(getNewBook(initialBook, Material.WRITTEN_BOOK, player))));
+
+                        if (leftOver.isEmpty()) {
+                            continue;
+                        }
+
+                        final Location loc = player.getLocation();
+                        final ItemStack item = getNewBook(initialBook, Material.WRITTEN_BOOK, player);
+                        player.getWorld().dropItem(loc, item);
+                    }
+                }
+
+                // Sets the result of the craft to the copied book.
+                event.setCurrentItem(initialBook);
+                break;
+         }
     }
 
-    private ItemStack getNewBook(final ItemStack previousBook, final Material bookType) {
+    private ItemStack getNewBook(final ItemStack previousBook, final Material bookType, final Player player) {
         if (bookType == null || (bookType != Material.WRITTEN_BOOK && bookType != Material.BOOK_AND_QUILL)) {
             throw new IllegalArgumentException();
         }
@@ -210,7 +171,7 @@ public final class BookDupeListener implements Listener {
         newBookMeta.setPages(previousBookMeta.getPages());
 
         // If the transfer of enchantments is allowed, transfers them.
-        if (allowIllegalEnchantTransfer && previousBookMeta.hasEnchants()) {
+        if (player.hasPermission("bookdupe.enchanted.transfer") && previousBookMeta.hasEnchants()) {
             newBookMeta.getEnchants().putAll(previousBookMeta.getEnchants());
         }
 
@@ -230,5 +191,48 @@ public final class BookDupeListener implements Listener {
         // Adds the recipe to the server's recipe list.
         Bukkit.getServer().addRecipe(recipe);
         recipes.put(name, recipe);
+    }
+
+    private String getRecipeName(Recipe recipe) {
+        // All BookDupe recipes are shapeless, so a non-shapeless recipe is not a valid BookDupe recipe.
+        if (!(recipe instanceof ShapelessRecipe)) {
+            return null;
+        }
+
+        final ShapelessRecipe recipe1 = (ShapelessRecipe) recipe;
+
+        for (Entry<String, Recipe> entry : recipes.entrySet()) {
+            // Retrieves the BookDupe recipe the possible recipe is being compared against.
+            ShapelessRecipe recipe2 = (ShapelessRecipe) entry.getValue();
+
+            // If they do not have the same result, they are not the same recipe.
+            if (!recipe1.getResult().equals(recipe2.getResult())) {
+                continue;
+            }
+
+            // If they do not have the same amount of ingredients, they are not the same recipe.
+            if (recipe1.getIngredientList().size() != recipe2.getIngredientList().size()) {
+                continue;
+            }
+
+            List<ItemStack> find = recipe1.getIngredientList();
+            List<ItemStack> compare = recipe2.getIngredientList();
+
+            // Ensures that any ingredient in the potential recipe's ingredient list exists in the actual recipe's ingredient list.
+            for (ItemStack ingredient : compare) {
+                if (!find.remove(ingredient)) {
+                    continue;
+                }
+            }
+
+            // If any ingredients in the potential recipe are not also in the actual recipe, then they are not the same recipe.
+            if (!find.isEmpty()) {
+                continue;
+            }
+
+            return entry.getKey();
+        }
+
+        return null;
     }
 }

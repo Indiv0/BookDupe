@@ -7,9 +7,27 @@ description: A plugin to allow the easy duplication of books.
 dev-url: http://github.com/Indiv0/BookDupe/
 
 permissions:
-  bookdupe.any:
+  bookdupe.copy:
     description: Allows for the copying of any book from any author
-    default: false
-  bookdupe.use:
-    description: Controls whether or not the user can use BookDupe
-    default: false
+    children:
+      bookdupe.copy.self: true
+      bookdupe.copy.others: true
+  bookdupe.copy.self:
+    description: Allows a user to copy books which belong to them
+  bookdupe.copy.others:
+    description: Allows a user to copy books which do not belong to them
+  bookdupe.unsign:
+    description: Allows a user to unsign any book from any author
+    children:
+      bookdupe.unsign.self: true
+      bookdupe.unsign.others: true
+  bookdupe.unsign.self:
+    description: Allows a user to unsign books which belong to them
+  bookdupe.unsign.others:
+    description: Allows a user to unsign books which do not belong to them
+  bookdupe.enchanted:
+    description: Allows a user to copy/unsign enchanted books
+  bookdupe.enchanted.transfer:
+    description: Allows a user to retain the enchantment when copying/unsigning books
+    children:
+      bookdupe.enchanted: true
