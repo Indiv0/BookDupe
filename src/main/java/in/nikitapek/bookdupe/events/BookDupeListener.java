@@ -15,10 +15,12 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.BookMeta;
 
 public final class BookDupeListener implements Listener {
-    private final BookDupeConfigurationContext configurationContext;
+    private final boolean allowIllegalEnchants;
+    private final boolean allowIllegalEnchantTransfer;
 
     public BookDupeListener(final BookDupeConfigurationContext configurationContext) {
-        this.configurationContext = configurationContext;
+        this.allowIllegalEnchants = configurationContext.allowIllegalEnchants;
+        this.allowIllegalEnchantTransfer = configurationContext.allowIllegalEnchantTransfer;
     }
 
     @EventHandler
@@ -59,7 +61,7 @@ public final class BookDupeListener implements Listener {
 
         // If the book has enchantments, check to see whether or not they're
         // allowed.
-        if (!initialBook.getEnchantments().isEmpty() && !configurationContext.allowIllegalEnchants) {
+        if (!initialBook.getEnchantments().isEmpty() && !allowIllegalEnchants) {
             event.setCancelled(true);
             return;
         }
@@ -191,7 +193,7 @@ public final class BookDupeListener implements Listener {
         newBookMeta.setPages(previousBookMeta.getPages());
 
         // If the transfer of enchantments is allowed, transfers them.
-        if (configurationContext.allowIllegalEnchantTransfer && previousBookMeta.hasEnchants()) {
+        if (allowIllegalEnchantTransfer && previousBookMeta.hasEnchants()) {
             newBookMeta.getEnchants().putAll(previousBookMeta.getEnchants());
         }
 
