@@ -1,39 +1,56 @@
 package in.nikitapek.bookdupe.events;
 
+import com.amshulman.mbapi.MbapiPlugin;
+import in.nikitapek.bookdupe.BookDupePlugin;
 import in.nikitapek.bookdupe.util.BookDupeConfigurationContext;
 
 import java.util.HashMap;
+import java.util.Map;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.CraftItemEvent;
-import org.bukkit.inventory.CraftingInventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.BookMeta;
 
 public final class BookDupeListener implements Listener {
+    private final Map<String, Recipe> recipes = new HashMap<>();
+
     private final boolean allowIllegalEnchants;
     private final boolean allowIllegalEnchantTransfer;
 
     public BookDupeListener(final BookDupeConfigurationContext configurationContext) {
         this.allowIllegalEnchants = configurationContext.allowIllegalEnchants;
         this.allowIllegalEnchantTransfer = configurationContext.allowIllegalEnchantTransfer;
+
+        addShapelessRecipe("duplicate", new ItemStack(Material.BOOK_AND_QUILL), new Material[] {
+                Material.WRITTEN_BOOK,
+                Material.BOOK_AND_QUILL
+        });
+        addShapelessRecipe("create", new ItemStack(Material.BOOK_AND_QUILL), new Material[] {
+                Material.WRITTEN_BOOK,
+                Material.INK_SACK,
+                Material.FEATHER,
+                Material.BOOK
+        });
+        addShapelessRecipe("unsign", new ItemStack(Material.BOOK_AND_QUILL), new Material[] {
+                Material.WRITTEN_BOOK,
+                Material.INK_SACK,
+                Material.FEATHER
+        });
     }
 
     @EventHandler
     public void onItemCraft(final CraftItemEvent event) {
-        // Get the crafting inventory (3x3 matrix) used to craft the item.
         final CraftingInventory craftingInventory = event.getInventory();
+        final Recipe recipe = event.getRecipe();
 
-        // Get the index of the first (and only) Material.WRITTEN_BOOK used in
-        // the recipe.
-        final int writtenBookIndex = craftingInventory.first(Material.WRITTEN_BOOK);
-
-        // Makes sure the recipe contains a WRITTEN_BOOK.
-        if (writtenBookIndex == -1) {
+        // All BookDupe recipes are hapeless, so a non-shapeless recipe is irrelevant.
+        // The recipe is also irrelevant if it is not stored in the recipes Map.
+        if (!(recipe instanceof ShapelessRecipe) || !recipes.containsValue(recipe)) {
             return;
         }
 
@@ -45,7 +62,7 @@ public final class BookDupeListener implements Listener {
         }
 
         // ItemStack represention of the book to be cloned.
-        final ItemStack initialBook = craftingInventory.getItem(writtenBookIndex);
+        final ItemStack initialBook = craftingInventory.getItem(craftingInventory.first(Material.WRITTEN_BOOK));
 
         // Gets the BookMeta data of the book.
         final BookMeta book = (BookMeta) initialBook.getItemMeta();
@@ -76,9 +93,9 @@ public final class BookDupeListener implements Listener {
         // Gets the index of the first BOOK in the recipe.
         final int bookIndex = craftingInventory.first(Material.BOOK);
 
-        if (inkSackIndex != -1 && featherIndex != -1 && bookIndex == -1) {
+        if (recipe.equals(recipes.get("unsign"))) {
             event.setCurrentItem(getNewBook(initialBook, Material.BOOK_AND_QUILL));
-        } else if (inkSackIndex == -1 || featherIndex == -1 || bookIndex == -1) {
+        } else if (recipe.equals(recipes.get("duplicate"))) {
             // Check only one BOOK_AND_QUILL is in the crafting matrix.
             if (craftingInventory.all(Material.BOOK_AND_QUILL).size() != 2) {
                 return;
@@ -89,7 +106,7 @@ public final class BookDupeListener implements Listener {
 
             // Sets the result of the craft to the copied books.
             event.setCurrentItem(getNewBook(initialBook, Material.WRITTEN_BOOK));
-        } else {
+        } else if (recipe.equals(recipe.equals(recipes.get("create")))) {
             // Handle a non BOOK_AND_QUILL based recipe.
             // If the player regularly clicked (singular craft).
             if (!event.isShiftClick()) {
@@ -199,5 +216,19 @@ public final class BookDupeListener implements Listener {
 
         newBook.setItemMeta(newBookMeta);
         return newBook;
+    }
+
+    private void addShapelessRecipe(final String name, final ItemStack result, final Material[] materials) {
+        // Initializes the recipe to be used to produce the result.
+        final ShapelessRecipe recipe = new ShapelessRecipe(result);
+
+        // Adds all of the required materials to the recipe.
+        for (final Material material : materials) {
+            recipe.addIngredient(material);
+        }
+
+        // Adds the recipe to the server's recipe list.
+        Bukkit.getServer().addRecipe(recipe);
+        recipes.put(name, recipe);
     }
 }
