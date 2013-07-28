@@ -4,7 +4,6 @@ import com.amshulman.mbapi.MbapiPlugin;
 import com.amshulman.mbapi.util.ConfigurationContext;
 
 public final class BookDupeConfigurationContext extends ConfigurationContext {
-    // Stores whether or not pumpkins are currently spreading.
     public final boolean allowIllegalEnchants;
     public final boolean allowIllegalEnchantTransfer;
 
