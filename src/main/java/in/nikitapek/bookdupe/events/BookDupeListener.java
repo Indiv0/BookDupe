@@ -201,7 +201,7 @@ public final class BookDupeListener implements Listener {
 
         final ShapelessRecipe recipe1 = (ShapelessRecipe) recipe;
 
-        for (Entry<String, Recipe> entry : recipes.entrySet()) {
+        recipe: for (Entry<String, Recipe> entry : recipes.entrySet()) {
             // Retrieves the BookDupe recipe the possible recipe is being compared against.
             ShapelessRecipe recipe2 = (ShapelessRecipe) entry.getValue();
 
@@ -221,7 +221,7 @@ public final class BookDupeListener implements Listener {
             // Ensures that any ingredient in the potential recipe's ingredient list exists in the actual recipe's ingredient list.
             for (ItemStack ingredient : compare) {
                 if (!find.remove(ingredient)) {
-                    continue;
+                    continue recipe;
                 }
             }
 
