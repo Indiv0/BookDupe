@@ -1,8 +1,7 @@
 package in.nikitapek.bookdupe;
 
-import in.nikitapek.bookdupe.events.BookDupeListener;
-
 import com.amshulman.mbapi.MbapiPlugin;
+import in.nikitapek.bookdupe.events.BookDupeListener;
 
 public final class BookDupePlugin extends MbapiPlugin {
     @Override

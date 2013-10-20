@@ -1,11 +1,5 @@
 package in.nikitapek.bookdupe.events;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -16,21 +10,27 @@ import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.BookMeta;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
 public final class BookDupeListener implements Listener {
     private final Map<String, Recipe> recipes = new HashMap<>();
 
     public BookDupeListener() {
-        addShapelessRecipe("duplicate", new ItemStack(Material.BOOK_AND_QUILL), new Material[] {
+        addShapelessRecipe("duplicate", new ItemStack(Material.BOOK_AND_QUILL), new Material[]{
                 Material.WRITTEN_BOOK,
                 Material.BOOK_AND_QUILL
         });
-        addShapelessRecipe("create", new ItemStack(Material.BOOK_AND_QUILL), new Material[] {
+        addShapelessRecipe("create", new ItemStack(Material.BOOK_AND_QUILL), new Material[]{
                 Material.WRITTEN_BOOK,
                 Material.INK_SACK,
                 Material.FEATHER,
                 Material.BOOK
         });
-        addShapelessRecipe("unsign", new ItemStack(Material.BOOK_AND_QUILL), new Material[] {
+        addShapelessRecipe("unsign", new ItemStack(Material.BOOK_AND_QUILL), new Material[]{
                 Material.WRITTEN_BOOK,
                 Material.INK_SACK,
                 Material.FEATHER
@@ -55,9 +55,9 @@ public final class BookDupeListener implements Listener {
         final ItemStack initialBook = craftingInventory.getItem(craftingInventory.first(Material.WRITTEN_BOOK));
         final BookMeta book = (BookMeta) initialBook.getItemMeta();
         final String author = book.getAuthor();
-        
+
         // If the book has enchantments, check to see whether or not the player is allowed to interact with enchanted books.
-        if (!player.hasPermission("bookdupe.enchanted") &&  !initialBook.getEnchantments().isEmpty()) {
+        if (!player.hasPermission("bookdupe.enchanted") && !initialBook.getEnchantments().isEmpty()) {
             event.setCancelled(true);
             return;
         }
@@ -75,7 +75,7 @@ public final class BookDupeListener implements Listener {
                     event.setCancelled(true);
                     return;
                 }
-                
+
                 // Ensure that only two (the ingredient and the result) BOOK_AND_QUILL are in the crafting matrix.
                 if (craftingInventory.all(Material.BOOK_AND_QUILL).size() != 2) {
                     return;
@@ -92,7 +92,7 @@ public final class BookDupeListener implements Listener {
                     event.setCancelled(true);
                     return;
                 }
-                
+
                 // If the player regularly clicked (singular craft).
                 if (!event.isShiftClick()) {
                     // Adds the original book to the player's inventory.
@@ -146,7 +146,7 @@ public final class BookDupeListener implements Listener {
                 // Sets the result of the craft to the copied book.
                 event.setCurrentItem(initialBook);
                 break;
-         }
+        }
     }
 
     private ItemStack getNewBook(final ItemStack previousBook, final Material bookType, final Player player) {
@@ -197,7 +197,8 @@ public final class BookDupeListener implements Listener {
 
         final ShapelessRecipe recipe1 = (ShapelessRecipe) recipe;
 
-        recipe: for (Entry<String, Recipe> entry : recipes.entrySet()) {
+        recipe:
+        for (Entry<String, Recipe> entry : recipes.entrySet()) {
             // Retrieves the BookDupe recipe the possible recipe is being compared against.
             ShapelessRecipe recipe2 = (ShapelessRecipe) entry.getValue();
 
