@@ -51,29 +51,11 @@ public final class BookDupeListener implements Listener {
             return;
         }
 
-        // If the player does not have the proper permissions to use BookDupe recipes, the event is cancelled.
-        if (!player.hasPermission("bookdupe.copy") && !player.hasPermission("bookdupe.unsign") ) {
-            event.setCancelled(true);
-            return;
-        }
-
         // Get the ItemStack and the BookMeta of the book in the recipe.
         final ItemStack initialBook = craftingInventory.getItem(craftingInventory.first(Material.WRITTEN_BOOK));
         final BookMeta book = (BookMeta) initialBook.getItemMeta();
         final String author = book.getAuthor();
-
-        // If the player does not have permission to copy/unsign books belonging to them and the book was written by the player, then the player is not allowed to copy/unsign the book.
-        if (author.equals(playerName) && !player.hasPermission("bookdupe.copy.self") && !player.hasPermission("bookdupe.unsign.self")) {
-            event.setCancelled(true);
-            return;
-        }
-
-        // If the player does not have permission to copy/unsign books not belonging to them and the book was not written by the player, then the player is not allowed to copy/unsign the book.
-        if (!author.equals(playerName) && !player.hasPermission("bookdupe.copy.others") && !player.hasPermission("bookdupe.unsign.others")) {
-            event.setCancelled(true);
-            return;
-        }
-
+        
         // If the book has enchantments, check to see whether or not the player is allowed to interact with enchanted books.
         if (!player.hasPermission("bookdupe.enchanted") &&  !initialBook.getEnchantments().isEmpty()) {
             event.setCancelled(true);
@@ -82,9 +64,18 @@ public final class BookDupeListener implements Listener {
 
         switch (recipeName) {
             case "unsign":
+                if (author.equals(playerName) ? !player.hasPermission("bookdupe.unsign.self") : !player.hasPermission("bookdupe.unsign.others")) {
+                    event.setCancelled(true);
+                    return;
+                }
                 event.setCurrentItem(getNewBook(initialBook, Material.BOOK_AND_QUILL, player));
                 break;
             case "duplicate":
+                if (author.equals(playerName) ? !player.hasPermission("bookdupe.copy.self") : !player.hasPermission("bookdupe.copy.others")) {
+                    event.setCancelled(true);
+                    return;
+                }
+                
                 // Ensure that only two (the ingredient and the result) BOOK_AND_QUILL are in the crafting matrix.
                 if (craftingInventory.all(Material.BOOK_AND_QUILL).size() != 2) {
                     return;
@@ -97,6 +88,11 @@ public final class BookDupeListener implements Listener {
                 event.setCurrentItem(getNewBook(initialBook, Material.WRITTEN_BOOK, player));
                 break;
             case "create":
+                if (author.equals(playerName) ? !player.hasPermission("bookdupe.copy.self") : !player.hasPermission("bookdupe.copy.others")) {
+                    event.setCancelled(true);
+                    return;
+                }
+                
                 // If the player regularly clicked (singular craft).
                 if (!event.isShiftClick()) {
                     // Adds the original book to the player's inventory.
