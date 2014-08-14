@@ -41,14 +41,14 @@
             <artifactId>mbapi</artifactId>
             <scope>compile</scope>
         </dependency>
+        <!-- Tests -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
     
-    <!-- Tests -->
-    <dependency>
-        <groupId>junit</groupId>
-        <artifactId>junit</artifactId>
-        <scope>test</scope>
-    </dependency>
 
     <distributionManagement>
         <repository>
