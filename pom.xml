@@ -13,6 +13,7 @@
     <properties>
         <aws-maven.version>4.8.0.RELEASE</aws-maven.version>
         <maven.jacoco.version>0.6.4.201312101107</maven.jacoco.version>
+        <junit.version>4.11</junit.version>
     </properties>
 
     <parent>
@@ -46,6 +47,7 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
+            <version>${junit.version}</version>
         </dependency>
     </dependencies>
     
