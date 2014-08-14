@@ -12,6 +12,7 @@
 
     <properties>
         <aws-maven.version>4.8.0.RELEASE</aws-maven.version>
+        <maven.jacoco.version>0.6.4.201312101107</maven.jacoco.version>
     </properties>
 
     <parent>
