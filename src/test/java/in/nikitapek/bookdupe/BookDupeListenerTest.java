@@ -10,6 +10,7 @@ import in.nikitapek.bookdupe.events.BookDupeListener;
 
 import org.bukkit.craftbukkit.v1_7_R4.inventory.CraftItemFactory;
 
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.inventory.ItemStack;
@@ -58,17 +59,17 @@ public class BookDupeListenerTest {
          * Set up the fake recipe.
          */
         ShapelessRecipe mockRecipe = mock(ShapelessRecipe.class);
-        ItemStack mockResult = mock(ItemStack.class);
-        ItemStack mockIngredient1 = mock(ItemStack.class);
-        ItemStack mockIngredient2 = mock(ItemStack.class);
-        ItemStack mockIngredient3 = mock(ItemStack.class);
+        ItemStack result = new ItemStack(Material.BOOK_AND_QUILL);
+        ItemStack ingredient1 = new ItemStack(Material.WRITTEN_BOOK);
+        ItemStack ingredient2 = new ItemStack(Material.INK_SACK);
+        ItemStack ingredient3 = new ItemStack(Material.FEATHER);
 
         // When onItemCraft calls event.getRecipe(), we want to return the mock recipe.
         when(mockEvent.getRecipe()).thenReturn(mockRecipe);
         // Return the fake recipe result.
-        when(mockRecipe.getResult()).thenReturn(mockResult);
+        when(mockRecipe.getResult()).thenReturn(result);
         // Return the fake recipe ingredients.
-        when(mockRecipe.getIngredientList()).thenReturn(Arrays.asList(mockIngredient1, mockIngredient2, mockIngredient3));
+        when(mockRecipe.getIngredientList()).thenReturn(Arrays.asList(ingredient1, ingredient2, ingredient3));
 
         // Create the listener.
         BookDupeListener listener = new BookDupeListener();
