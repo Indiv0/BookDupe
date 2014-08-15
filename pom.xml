@@ -10,10 +10,6 @@
     <description>A Bukkit plugin which allows users to duplicate books through a recipe.</description>
     <url>http://dev.bukkit.org/server-mods/bookdupe/</url>
 
-    <properties>
-        <aws-maven.version>4.8.0.RELEASE</aws-maven.version>
-    </properties>
-
     <parent>
         <groupId>com.amshulman</groupId>
         <artifactId>bukkit-parent</artifactId>
@@ -47,20 +43,6 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-    
-
-    <distributionManagement>
-        <repository>
-            <id>aws-release</id>
-            <name>AWS Release Repository</name>
-            <url>s3://indiv0-maven-repo/release</url>
-        </repository>
-        <snapshotRepository>
-            <id>aws-snapshot</id>
-            <name>AWS Snapshot Repository</name>
-            <url>s3://indiv0-maven-repo/snapshot</url>
-        </snapshotRepository>
-    </distributionManagement>
 
     <profiles>
         <profile>
