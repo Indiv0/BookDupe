@@ -20,7 +20,7 @@
         <repository>
             <id>minerap-repo</id>
             <name>MinerAp</name>
-            <url>http://repo.minerap.com</url>
+            <url>http://repo.minerap.com/</url>
         </repository>
     </repositories>
 
