@@ -46,6 +46,12 @@
             <version>1.5.5</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot</artifactId>
+            <version>${craftbukkit.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <repositories>
