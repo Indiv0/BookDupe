@@ -1,5 +1,6 @@
 package in.nikitapek.bookdupe;
 
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
@@ -73,6 +74,9 @@ public class BookDupeListenerTest {
 
         // Create the listener.
         BookDupeListener listener = new BookDupeListener();
+
+        doReturn("unsign").when(listener, "getRecipeName", mockRecipe);
+
         // Send in the mock event.
         listener.onItemCraft(mockEvent);
 
