@@ -1,4 +1,6 @@
-# BookDupe [![Travis CI](https://secure.travis-ci.org/MinerAp/book-dupe.png)](http://travis-ci.org/#!/MinerAp/book-dupe)
+# BookDupe
+[![Travis CI](https://secure.travis-ci.org/MinerAp/book-dupe.png)](http://travis-ci.org/#!/MinerAp/book-dupe)
+[![Coverage Status](https://img.shields.io/coveralls/MinerAp/book-dupe.svg)](https://coveralls.io/r/MinerAp/book-dupe?branch=master)
 
 BookDupe is a plugin for Bukkit which provides the ability to copy written books without significant effort.
 
