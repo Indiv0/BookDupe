@@ -71,8 +71,6 @@ public class BookDupeListenerTest {
         // Create the listener.
         BookDupeListener listener = new BookDupeListener();
 
-        //doReturn("unsign").when(listener).getRecipeName(recipe);
-
         // Send in the mock event.
         //listener.onItemCraft(mockEvent);
 
