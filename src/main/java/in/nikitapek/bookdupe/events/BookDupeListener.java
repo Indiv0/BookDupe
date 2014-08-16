@@ -16,25 +16,32 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import in.nikitapek.bookdupe.util.BookDupeUtil;
+
 public final class BookDupeListener implements Listener {
     private final Map<String, Recipe> recipes = new HashMap<>();
 
     public BookDupeListener() {
-        addShapelessRecipe("duplicate", new ItemStack(Material.BOOK_AND_QUILL), new Material[]{
+        recipes.put("duplicate", BookDupeUtil.createShapelessRecipe(new ItemStack(Material.BOOK_AND_QUILL), new Material[]{
                 Material.WRITTEN_BOOK,
                 Material.BOOK_AND_QUILL
-        });
-        addShapelessRecipe("create", new ItemStack(Material.BOOK_AND_QUILL), new Material[]{
+        }));
+        recipes.put("create", BookDupeUtil.createShapelessRecipe(new ItemStack(Material.BOOK_AND_QUILL), new Material[]{
                 Material.WRITTEN_BOOK,
                 Material.INK_SACK,
                 Material.FEATHER,
                 Material.BOOK
-        });
-        addShapelessRecipe("unsign", new ItemStack(Material.BOOK_AND_QUILL), new Material[]{
+        }));
+        recipes.put("unsign", BookDupeUtil.createShapelessRecipe(new ItemStack(Material.BOOK_AND_QUILL), new Material[]{
                 Material.WRITTEN_BOOK,
                 Material.INK_SACK,
                 Material.FEATHER
-        });
+        }));
+
+        // Add the recipes to the server's recipe list.
+        for (Recipe recipe : recipes.values()) {
+            Bukkit.getServer().addRecipe(recipe);
+        }
     }
 
     @EventHandler
@@ -173,20 +180,6 @@ public final class BookDupeListener implements Listener {
 
         newBook.setItemMeta(newBookMeta);
         return newBook;
-    }
-
-    private void addShapelessRecipe(final String name, final ItemStack result, final Material[] materials) {
-        // Initializes the recipe to be used to produce the result.
-        final ShapelessRecipe recipe = new ShapelessRecipe(result);
-
-        // Adds all of the required materials to the recipe.
-        for (final Material material : materials) {
-            recipe.addIngredient(material);
-        }
-
-        // Adds the recipe to the server's recipe list.
-        Bukkit.getServer().addRecipe(recipe);
-        recipes.put(name, recipe);
     }
 
     private String getRecipeName(Recipe recipe) {

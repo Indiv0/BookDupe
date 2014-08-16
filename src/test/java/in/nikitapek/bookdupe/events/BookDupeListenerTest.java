@@ -1,4 +1,4 @@
-package in.nikitapek.bookdupe;
+package in.nikitapek.bookdupe.events;
 
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -7,6 +7,7 @@ import static org.mockito.Mockito.verify;
 
 import java.util.Arrays;
 
+import in.nikitapek.bookdupe.BukkitInitialization;
 import in.nikitapek.bookdupe.events.BookDupeListener;
 
 import org.bukkit.craftbukkit.v1_7_R4.inventory.CraftItemFactory;
@@ -16,6 +17,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapelessRecipe;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,8 +25,6 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-
-import in.nikitapek.bookdupe.BukkitInitialization;
 
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore("javax.management.*")
@@ -71,7 +71,7 @@ public class BookDupeListenerTest {
         // Create the listener.
         BookDupeListener listener = new BookDupeListener();
 
-        doReturn("unsign").when(listener).getRecipeName(recipe);
+        //doReturn("unsign").when(listener).getRecipeName(recipe);
 
         // Send in the mock event.
         listener.onItemCraft(mockEvent);
