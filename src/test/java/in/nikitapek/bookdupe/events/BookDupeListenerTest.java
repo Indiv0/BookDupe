@@ -1,7 +1,8 @@
 package in.nikitapek.bookdupe.events;
 
-import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 
@@ -15,6 +16,7 @@ import org.bukkit.craftbukkit.v1_7_R4.inventory.CraftItemFactory;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.CraftItemEvent;
+import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapelessRecipe;
 import org.junit.Assert;
@@ -40,7 +42,6 @@ public class BookDupeListenerTest {
         /*
          * Set up the fake CraftItemEvent
          */
-
         CraftItemEvent mockEvent = PowerMockito.mock(CraftItemEvent.class);
 
         /*
@@ -55,6 +56,16 @@ public class BookDupeListenerTest {
 
         // When onItemCraft calls event.getWhoClicked(), we want to return the mock player.
         when(mockEvent.getWhoClicked()).thenReturn(mockPlayer);
+
+        // Create the book being used in the recipe.
+        ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
+
+        // Mock a CraftingInventory.
+        CraftingInventory mockInventory = mock(CraftingInventory.class);
+        when(mockInventory.getItem(any(int.class))).thenReturn(book);
+
+        // Return a mock inventory on event.getInventory();
+        when(mockEvent.getInventory()).thenReturn(mockInventory);
 
         /*
          * Set up the fake recipe.

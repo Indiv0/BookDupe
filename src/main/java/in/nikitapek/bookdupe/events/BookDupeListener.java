@@ -75,7 +75,7 @@ public final class BookDupeListener implements Listener {
                     event.setCancelled(true);
                     return;
                 }
-                event.setCurrentItem(getNewBook(initialBook, Material.BOOK_AND_QUILL, player));
+                event.setCurrentItem(BookDupeUtil.constructBook(book, Material.BOOK_AND_QUILL, player.hasPermission("bookdupe.enchanted.transfer")));
                 break;
             case "duplicate":
                 if (author.equals(playerName) ? !player.hasPermission("bookdupe.copy.self") : !player.hasPermission("bookdupe.copy.others")) {
@@ -92,7 +92,7 @@ public final class BookDupeListener implements Listener {
                 playerInventory.addItem(initialBook);
 
                 // Sets the result of the craft to the copied book.
-                event.setCurrentItem(getNewBook(initialBook, Material.WRITTEN_BOOK, player));
+                event.setCurrentItem(BookDupeUtil.constructBook(book, Material.WRITTEN_BOOK, player.hasPermission("bookdupe.enchanted.transfer")));
                 break;
             case "create":
                 if (author.equals(playerName) ? !player.hasPermission("bookdupe.copy.self") : !player.hasPermission("bookdupe.copy.others")) {
@@ -103,7 +103,7 @@ public final class BookDupeListener implements Listener {
                 // If the player regularly clicked (singular craft).
                 if (!event.isShiftClick()) {
                     // Adds the original book to the player's inventory.
-                    playerInventory.addItem(getNewBook(initialBook, Material.WRITTEN_BOOK, player));
+                    playerInventory.addItem(BookDupeUtil.constructBook(book, Material.WRITTEN_BOOK, player.hasPermission("bookdupe.enchanted.transfer")));
                 } else {
                     final Map<Integer, Integer> itemsLeft = new HashMap<>();
 
@@ -138,14 +138,14 @@ public final class BookDupeListener implements Listener {
 
                     // Adds the new books to the player's inventory.
                     for (int i = 0; i < lowestAmount; i++) {
-                        leftOver.putAll((playerInventory.addItem(getNewBook(initialBook, Material.WRITTEN_BOOK, player))));
+                        leftOver.putAll((playerInventory.addItem(BookDupeUtil.constructBook(book, Material.WRITTEN_BOOK, player.hasPermission("book.enchanted.transfer")))));
 
                         if (leftOver.isEmpty()) {
                             continue;
                         }
 
                         final Location loc = player.getLocation();
-                        final ItemStack item = getNewBook(initialBook, Material.WRITTEN_BOOK, player);
+                        final ItemStack item = BookDupeUtil.constructBook(book, Material.WRITTEN_BOOK, player.hasPermission("book.enchanted.transfer"));
                         player.getWorld().dropItem(loc, item);
                     }
                 }
@@ -154,32 +154,6 @@ public final class BookDupeListener implements Listener {
                 event.setCurrentItem(initialBook);
                 break;
         }
-    }
-
-    private ItemStack getNewBook(final ItemStack previousBook, final Material bookType, final Player player) {
-        if (bookType == null || (bookType != Material.WRITTEN_BOOK && bookType != Material.BOOK_AND_QUILL)) {
-            throw new IllegalArgumentException();
-        }
-        // Creates the new book to be returned.
-        final ItemStack newBook = new ItemStack(bookType);
-
-        // Retrieves the BookMeta data.
-        final BookMeta newBookMeta = (BookMeta) newBook.getItemMeta();
-        final BookMeta previousBookMeta = (BookMeta) previousBook.getItemMeta();
-
-        // Transfers the author, title, and pages to the new tag.
-        newBookMeta.setAuthor(previousBookMeta.getAuthor());
-        newBookMeta.setTitle(previousBookMeta.getTitle());
-        newBookMeta.setLore(previousBookMeta.getLore());
-        newBookMeta.setPages(previousBookMeta.getPages());
-
-        // If the transfer of enchantments is allowed, transfers them.
-        if (player.hasPermission("bookdupe.enchanted.transfer") && previousBookMeta.hasEnchants()) {
-            newBookMeta.getEnchants().putAll(previousBookMeta.getEnchants());
-        }
-
-        newBook.setItemMeta(newBookMeta);
-        return newBook;
     }
 
     private String getRecipeName(Recipe recipe) {
