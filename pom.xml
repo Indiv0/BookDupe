@@ -21,6 +21,8 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
+            <!-- TODO: Remove this once bukkit-parent updates it's spigot version -->
+            <version>1.7.10-R0.1-SNAPSHOT</version>
         </dependency>
         <!-- Mbapi -->
         <dependency>
@@ -59,6 +61,12 @@
             <id>minerap-repo</id>
             <name>MinerAp</name>
             <url>http://repo.minerap.com/content/groups/public/</url>
+        </repository>
+        <!-- TODO: Remove this once spigot-api is pushed to the MinerAp repo -->
+        <repository>
+            <id>spigot-repo</id>
+            <name>Spigot</name>
+            <url>http://repo.md-5.net/content/groups/public/</url>
         </repository>
     </repositories>
 
