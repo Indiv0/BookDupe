@@ -43,18 +43,15 @@ public class BukkitInitialization {
 
             // Mock the server object.
             Server mockedServer = mock(Server.class);
-            ItemFactory mockedFactory = mock(CraftItemFactory.class);
 
-            when(mockedServer.getItemFactory()).thenReturn(mockedFactory);
+            // Create the CraftItemFactory instance.
+            ItemFactory factory = CraftItemFactory.instance();
+
+            when(mockedServer.getItemFactory()).thenReturn(factory);
             when(mockedServer.isPrimaryThread()).thenReturn(true);
-            when(mockedFactory.getItemMeta(any(Material.class))).thenReturn(null);
-            when(mockedFactory.equals(any(ItemMeta.class), any(ItemMeta.class))).thenReturn(true);
 
             // Inject this fake server.
             setStaticField(Bukkit.class, "server", mockedServer);
-
-            // And the fake item factory.
-            setStaticField(CraftItemFactory.class, "instance", mockedFactory);
         }
     }
 
