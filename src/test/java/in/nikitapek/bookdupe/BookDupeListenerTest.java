@@ -59,23 +59,19 @@ public class BookDupeListenerTest {
         /*
          * Set up the fake recipe.
          */
-        ShapelessRecipe mockRecipe = mock(ShapelessRecipe.class);
         ItemStack result = new ItemStack(Material.BOOK_AND_QUILL);
-        ItemStack ingredient1 = new ItemStack(Material.WRITTEN_BOOK);
-        ItemStack ingredient2 = new ItemStack(Material.INK_SACK);
-        ItemStack ingredient3 = new ItemStack(Material.FEATHER);
+        ShapelessRecipe recipe = new ShapelessRecipe(result);
+        recipe.addIngredient(Material.WRITTEN_BOOK);
+        recipe.addIngredient(Material.INK_SACK);
+        recipe.addIngredient(Material.FEATHER);
 
         // When onItemCraft calls event.getRecipe(), we want to return the mock recipe.
-        when(mockEvent.getRecipe()).thenReturn(mockRecipe);
-        // Return the fake recipe result.
-        when(mockRecipe.getResult()).thenReturn(result);
-        // Return the fake recipe ingredients.
-        when(mockRecipe.getIngredientList()).thenReturn(Arrays.asList(ingredient1, ingredient2, ingredient3));
+        when(mockEvent.getRecipe()).thenReturn(recipe);
 
         // Create the listener.
         BookDupeListener listener = new BookDupeListener();
 
-        doReturn("unsign").when(listener, "getRecipeName", mockRecipe);
+        doReturn("unsign").when(listener).getRecipeName(recipe);
 
         // Send in the mock event.
         listener.onItemCraft(mockEvent);
