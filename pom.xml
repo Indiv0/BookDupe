@@ -51,7 +51,9 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot</artifactId>
-            <version>${craftbukkit.version}</version>
+            <!-- TODO: Remove this once bukkit-parent updates it's spigot version -->
+            <version>1.7.10-R0.1-SNAPSHOT</version>
+            <!--<version>${craftbukkit.version}</version>-->
             <scope>test</scope>
         </dependency>
     </dependencies>
