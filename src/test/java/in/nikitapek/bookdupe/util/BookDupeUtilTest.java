@@ -61,7 +61,7 @@ public class BookDupeUtilTest {
 
         // Stub all of the relevant methods for the mock book metadata.
         when(mockMeta.getAuthor()).thenReturn(authorName);
-       when(mockMeta.getTitle()).thenReturn(bookTitle);
+        when(mockMeta.getTitle()).thenReturn(bookTitle);
         when(mockMeta.getLore()).thenReturn(lore);
         when(mockMeta.getPages()).thenReturn(pages);
         when(mockMeta.getEnchants()).thenReturn(enchantments);
